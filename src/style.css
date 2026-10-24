@@ -128,6 +128,20 @@ button:disabled {
   border-color: var(--accent-2);
 }
 
+.section-title { font-size: 1.1rem; margin: 4px 0 0; }
+.info-card .info-title { font-size: 1.2rem; color: var(--text); text-transform: none; letter-spacing: 0; overflow-wrap: anywhere; }
+.info-details { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.5; }
+.info-status.status-active { color: var(--accent); border-color: var(--accent); }
+.info-status.status-closed { color: var(--accent-2); border-color: var(--accent-2); }
+.info-status.status-withdrawn { color: var(--danger); border-color: var(--danger); }
+.coordinate-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.coordinate-fields label { min-width: 0; }
+.info-changed { border-color: var(--accent); animation: info-highlight 1.5s ease-out; }
+.info-updated { color: var(--accent); }
+.offline-notice { max-width: 520px; margin: 0 auto; padding: 0 16px 16px; }
+@keyframes info-highlight { from { background: #17432f; } to { background: var(--panel); } }
+@media (prefers-reduced-motion: reduce) { .info-changed, .pulse { animation: none; } }
+
 .stat {
   font-variant-numeric: tabular-nums;
   color: var(--muted);

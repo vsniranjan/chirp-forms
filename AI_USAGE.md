@@ -4,10 +4,12 @@ If maintaining this record, briefly document the actual contributions of whichev
 
 ## Event build log
 
-The work so far used **Devin** (Cognition's coding agent, running Claude Opus), not Codex. Codex rows will be added if and when it is used. "Human review" says what the participant actually checked.
+The earlier build used **Devin** (Cognition's coding agent, running Claude Opus). **Codex** joined
+for product planning and the saved-information flow. "Human review" says what the participant actually checked.
 
 | Date and time with timezone | Tool / model, if known | Task | Assistance and affected files | Human review / corrections | Validation and result |
 | --- | --- | --- | --- | --- | --- |
+| 2026-10-24T22:57:25+05:30 | Codex (GPT-6) | One-way information cards and local reference library | Product discussion/plan; `src/protocol/info.js`, `src/ui/information.js`, routing/storage/styles, production offline cache and manifest, unit/smoke scenarios, project docs. Reused ggwave and existing link/chunking; no dependencies added. | Participant approved plan, chose one coordinator/search/categories/retained closed cards, then explicitly requested no demo or check runs. Code and phone review pending. | Tests, build, browser smoke and phone demo **not run**, as requested. Existing forms test scenarios retained; new replay/update/offline scenarios written. |
 | 2026-10-24T20:00+05:30 (approx., before first commit) | Devin (Claude Opus) | Ideation against the track list; checked for prior art | Proposed ideas, ran web searches for existing products, stress-tested "forms over sound" against likely judge questions. No files. | Participant chose the idea, target user (relief crews), Android-only demo and stack. | n/a |
 | 2026-10-24T20:55:25+05:30 | Devin (Claude Opus) | M0 scaffold and modem spike | `PLAN.md`, `chirp-forms/` Vite scaffold, `src/audio/ggwave.js`, link-test page, `scripts/spike-*.cjs` | Participant ran the link test on two Android phones and confirmed byte-exact delivery. | Node loopback OK. Airtime numbers were wrong by 4x; the agent found and corrected this later. |
 | 2026-10-24T20:57:41+05:30 | Devin (Claude Opus) | Agent handoff memory | `AGENTS.md` | Requested by participant; content review pending. | Docs-only |

@@ -57,7 +57,7 @@ export function header(role, { onSettingsChange = () => {}, showRepeat = false }
   });
   const repeat = h(
     'select',
-    { onchange: (e) => settings.set({ repeat: Number(e.target.value) }) },
+    { onchange: (e) => (settings.set({ repeat: Number(e.target.value) }), onSettingsChange()) },
     [1, 2, 3].map((n) => h('option', { value: n, selected: n === s.repeat }, `Broadcast x${n}`))
   );
   return h(
@@ -82,7 +82,7 @@ export function header(role, { onSettingsChange = () => {}, showRepeat = false }
           h('a', { href: '#/diag', class: 'btn secondary small' }, 'Link test'),
           h('button', {
             class: 'secondary small danger',
-            onclick: () => confirm('Delete all forms, entries and results on this phone?') && (resetData(), location.reload()),
+            onclick: () => confirm('Delete all information cards, forms, entries and results on this phone?') && (resetData(), location.reload()),
           }, 'Reset data')
         )
       )

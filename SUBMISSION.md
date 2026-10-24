@@ -5,7 +5,7 @@ Complete this file during the hackathon and use it to prepare your submission th
 ## Project
 
 - **Project name:** Chirp Forms
-- **Short description:** Disaster-relief crews often work where there is no network. Chirp Forms lets a coordinator broadcast a data-collection form to every phone in earshot as a short chirp of sound. Workers fill entries offline and chirp them back. The coordinator's phone merges the entries and exports CSV. There is no internet, Bluetooth pairing or app install, and it works on any phone with a speaker, a mic and a browser.
+- **Short description:** Chirp broadcasts disaster-information cards over sound. Nearby listening phones save places, supplies, contacts and instructions as a searchable local reference. Newer broadcasts update the same records, including closure notices; older replays cannot undo them. Existing two-way form collection remains available as a secondary feature. New implementation is pending participant verification.
 - **Code repository URL:** https://github.com/vsniranjan/chirp-forms
 - **Final submitted implementation commit SHA:** TODO
 - **Working demo URL or local demo steps:** Local demo — see [README › Run the project](README.md#run-the-project) and [Demo walkthrough](README.md#demo-walkthrough).
@@ -17,7 +17,7 @@ Participate solo or in a team of up to 4. Remove unused rows.
 
 | Participant name | GitHub handle | Contribution |
 | --- | --- | --- |
-| Niranjan | [@vsniranjan](https://github.com/vsniranjan) | Solo: idea, product decisions, on-device testing, direction of the AI agent (Devin) that wrote the code |
+| Niranjan | [@vsniranjan](https://github.com/vsniranjan) | Solo: idea, product decisions, on-device testing, direction of Devin and Codex |
 
 ## Run and demonstrate
 
@@ -25,9 +25,9 @@ Participate solo or in a team of up to 4. Remove unused rows.
 - **Install command:** `npm install`
 - **Required environment variable names:** None.
 - **Start command:** `npm run dev`, then open `https://<LAN-IP>:5173` on each phone and accept the self-signed certificate.
-- **Demo walkthrough:** Supervisor phone broadcasts the *Rapid Needs* form → worker phone shows "Form received" → worker saves an entry and taps Send → the row appears on the supervisor and the worker shows "Delivered" → export CSV. Repeat in airplane mode.
-- **Checks performed and results:** `npm test` 29/29 passing. `npm run build` OK. `npm run smoke` 20/20 checks in headless Chrome with real chirp audio. Raw phone-to-phone chirp verified on two Android phones. Full flow on real phones: TODO.
-- **Known limitations or incomplete features:** About 10–28 bytes/s, so text and numbers only. One sender at a time. iOS untested. The first page load needs the network (offline PWA planned). Loudspeaker `.wav` mode planned.
+- **Demo walkthrough (not yet performed):** sender saves/broadcasts a water-point card; receiver listens and saves it; sender edits hours and rebroadcasts, updating the same visible card; sender marks it Closed; old replay does not reopen it; receiver reloads offline and searches water. See README for production-cache preparation. Forms remain accessible separately.
+- **Checks performed and results:** Previous forms baseline: 32 unit tests, production build and 25 smoke checks were recorded passing before this change; raw phone-to-phone chirps were confirmed. New information/PWA implementation: **tests, build and demos not run**, at participant request. Unit and smoke scenarios are provided; all new verification is TODO.
+- **Known limitations or incomplete features:** About 10–28 bytes/s; short cards only, one sender at a time, foreground mic listening. New UI English; authored information is not translated. Broadcast source IDs are not authentication. iOS untested. First load needs connectivity and production caching needs trusted HTTPS. No deployment or phone-cache setup has been performed. Maps/calls have external requirements. Loudspeaker `.wav` export deferred.
 - **Libraries, APIs, and public datasets used:** [ggwave](https://github.com/ggerganov/ggwave) (MIT, Georgi Gerganov) as the sound modem; Vite, @vitejs/plugin-basic-ssl and Vitest (MIT). No datasets.
 - **AI usage record:** [AI_USAGE.md](AI_USAGE.md)
 - **Development change log:** [CHANGELOG.md](CHANGELOG.md)

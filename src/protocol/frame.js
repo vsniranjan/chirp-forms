@@ -17,6 +17,7 @@ export const MsgType = Object.freeze({
   PING: 4,
   PONG: 5,
   ALERT: 6,
+  INFO: 7,
 });
 
 const CRC_TABLE = (() => {

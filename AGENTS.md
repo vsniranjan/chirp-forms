@@ -71,6 +71,12 @@ The 30-minute target is this repository's working convention. It does not replac
 
 ## What we are building (one paragraph)
 
+**Current primary flow (Codex session 3):** broadcast disaster-information cards over sound;
+receivers save them locally, search later, and apply newer revisions to the same cards. Categories:
+places, supplies, contacts, instructions. Existing forms below remain secondary, accessible from
+the home screen. The participant explicitly asked not to run checks/demo this session: implementation
+and test scenarios are written, but all new behavior/build/offline caching is unverified.
+
 **Chirp Forms** — a static PWA that sends small forms between phones using *sound* (ggwave FSK
 modem over speaker/mic). A supervisor broadcasts a form with one chirp; every phone in earshot
 receives it; workers fill entries offline; entries chirp back; supervisor merges and exports CSV.
@@ -105,7 +111,10 @@ modem; our work is the protocol (chunking, ACK/retry, compact codec) and the pro
 | `scripts/smoke.mjs` | Headless Chrome E2E over CDP; feeds real chirp WAVs into the fake mic. |
 | `scripts/spike-*.cjs` | Node loopback throughput spikes. Rerun if protocol params change. |
 
-Not yet built: `src/audio/speaker.js` (M4), PWA manifest/service worker (M5).
+New files: `src/protocol/info.js` (binary snapshots, merge/search helpers),
+`src/ui/information.js` (sender/library), `src/offline.js` and `scripts/offline-plugin.js`
+(production precache), `public/manifest.webmanifest`. `MsgType.INFO` = 7.
+Still deferred: `src/audio/speaker.js` (M4). PWA code now exists but is unverified.
 
 ## Commands
 
@@ -115,8 +124,9 @@ npm run dev                      # HTTPS dev server on https://<LAN-IP>:5173 (se
 npm run build && npm run preview # production build check
 node scripts/spike-loopback.cjs  # airtime / effective B/s per protocol (no audio hardware needed)
 node scripts/spike-chunked.cjs   # browser-like 1024-sample chunked decode check
-npm test                         # Vitest: 29 tests incl. lossy-air link sim + real ggwave modem loopback
+npm test                         # Vitest, incl. new information tests (not run this session)
 npm run smoke                    # headless Chrome E2E (needs `npm run dev` running; uses installed Chrome)
+npm run smoke:offline -- https://localhost:5174 # production preview required; new scenario is unrun
 ```
 
 Phones must be on the same Wi-Fi as the dev machine. Mic requires HTTPS (hence basic-ssl plugin).
@@ -246,3 +256,18 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
   strings in `src/i18n.js`.
 - Next step, in the human's priority order: **M5 offline PWA** (reload works in airplane mode),
   then **M4 loudspeaker + .wav**, then roll-call only if time allows. No image work.
+
+### 2026-10-24 — session 3 (Codex)
+- Human approved the one-way saved-information plan, then explicitly said not to run demos/checks;
+  they will check later. This overrides the usual test-before-commit convention for this change.
+- Implemented: new primary `#/broadcast` and `#/saved` screens, four categories, editor/statuses,
+  optional coordinates/phone/hours, live byte/airtime display, persistent source/record/version
+  identities, newer-only updates with visible card changes, offline search/filter/map/contact actions.
+- Existing supervisor/worker forms remain behind a secondary home link. Added production precache,
+  readiness feedback, manifest, and separate preview port 5174. No new dependencies.
+- Added unit and real-chirp smoke scenarios, including replay/closure and optional offline reload.
+  **No tests, build, browser demo or real-phone checks were run.** Do not inherit old passing counts
+  as evidence for this version. Transmitted information is not automatically translated/authenticated.
+- Next: human checks the water-card create -> hours update -> closure -> old replay -> offline search
+  flow; run documented checks when authorized. Phone PWA needs trusted HTTPS; local self-signed dev
+  loading alone does not establish offline readiness. WAV/loudspeaker export remains deferred.

@@ -39,8 +39,20 @@ export const workerStore = {
   save: (s) => save('worker', s),
 };
 
-/** Clears forms/entries/results but keeps this phone's device id and settings. */
+export const infoSenderStore = {
+  load: () => load('info-sender', { records: {}, nextId: 1 }),
+  save: (state) => save('info-sender', state),
+};
+
+export const infoReceiverStore = {
+  load: () => load('info-receiver', { records: {} }),
+  save: (state) => save('info-receiver', state),
+};
+
+/** Keep the identity counter so a reset cannot reuse IDs that other phones still remember. */
 export function resetData() {
   localStorage.removeItem(PREFIX + 'supervisor');
   localStorage.removeItem(PREFIX + 'worker');
+  infoSenderStore.save({ records: {}, nextId: infoSenderStore.load().nextId });
+  localStorage.removeItem(PREFIX + 'info-receiver');
 }

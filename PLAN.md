@@ -3,7 +3,14 @@
 > Agents: read `AGENTS.md` first (how to work, hard facts, handoff protocol, session log).
 > This file is *what* to build. Tick milestone checkboxes as you go.
 
-Forms that travel by sound. Offline field data collection for disaster-relief crews:
+**Current main flow:** a coordinator broadcasts information cards (places, supplies, contacts,
+instructions), receivers save and search them locally, and newer broadcasts update existing cards.
+One-way information broadcasting is the current demo; existing forms remain secondary.
+
+**Verification override:** the participant asked Codex not to run checks or a demo for this change.
+New tests and smoke scenarios are written but unrun; build/offline/phone verification is pending.
+
+Existing secondary flow — forms that travel by sound. Offline field data collection for disaster-relief crews:
 one chirp broadcasts a form to every phone in earshot, workers fill it offline, entries
 chirp back to the supervisor who merges them and exports CSV. No internet, no Bluetooth
 pairing, no app install — a static PWA using the phone's speaker and mic.
@@ -77,6 +84,28 @@ Codec:
 - Device ID 2 B + entry seq 1 B for dedup on merge.
 
 ## Milestones
+
+- [x] **Information flow — implementation.** New primary sender and receiver routes; four card
+      categories, optional coordinates/phone/hours, statuses, persistent versioned updates,
+      visible update highlights, search/category filters and map/contact actions. Single coordinator.
+- [x] **Offline loading — implementation.** Build-generated service worker, manifest and readiness
+      notice; library browsing does not require mic access. Production preview uses port 5174.
+- [ ] **Information/offline verification.** Participant will run checks and the real-phone demo.
+      `npm test`, `npm run build`, `npm run smoke` (dev), then production
+      `npm run smoke:offline -- https://localhost:5174`. None run by Codex, per participant request.
+
+Information transport: new `MsgType.INFO` = 7; complete snapshots, no ACKs; reuse chunking and
+broadcast repeats. Binary schema version 1 carries source ID, record ID, monotonic version,
+category/status, optional millionth-degree coordinates and bounded UTF-8 title/details/phone/hours.
+At most 268 payload bytes (two frames); live airtime comes from the modem. Receivers key by
+source + record ID and accept only greater versions, including after reload. Missing older
+versions do not block a new snapshot. Closed/withdrawn records remain searchable. Reset preserves
+the sender's next-ID counter to avoid reusing IDs remembered by other phones.
+
+No new dependencies. One coordinator, no authentication, chatbot, automatic expiry or full history.
+Source text is shown as authored; existing forms translations are retained. Phone offline caching
+requires trusted HTTPS; no hosting changes or phone setup have been made. Map actions still depend
+on Google Maps connectivity or previously downloaded coverage.
 
 - [x] **M0 — Spike.** Vite project, ggwave loaded, Send/Listen page. Phone-to-phone test with
       `AUDIBLE_FAST` and `AUDIBLE_FASTEST`. Record: real bytes/sec, whether raw bytes survive the

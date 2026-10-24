@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "smoke:offline": "node scripts/smoke.mjs --offline"
   },
   "devDependencies": {
     "@vitejs/plugin-basic-ssl": "^2.3.0",

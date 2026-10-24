@@ -11,12 +11,15 @@ import { split } from '../src/protocol/chunker.js';
 import { MsgType } from '../src/protocol/frame.js';
 import { encodeEntries, encodeForm } from '../src/protocol/codec.js';
 import { PRESETS } from '../src/presets.js';
+import { encodeInfo, infoKey } from '../src/protocol/info.js';
 
-const BASE = process.argv[2] ?? 'https://localhost:5173';
+const BASE = process.argv.slice(2).find((arg) => !arg.startsWith('--')) ?? 'https://localhost:5173';
+const OFFLINE = process.argv.includes('--offline');
 const CHROME = process.env.CHROME ?? 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const work = mkdtempSync(join(tmpdir(), 'chirp-smoke-'));
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const failures = [];
+const browsers = new Set();
 const check = (name, ok, detail = '') => {
   console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? `  (${detail})` : ''}`);
   if (!ok) failures.push(name);
@@ -49,6 +52,35 @@ const form = { id: 42, ...PRESETS.rapidNeeds };
 const formWav = chirpWav('form', split(MsgType.FORM, 0x1111, encodeForm(form))[0]);
 const entriesWav = chirpWav('entries', split(MsgType.ENTRIES, 0x2222,
   encodeEntries(form, 0xa1b2, [{ seq: 1, values: [12, 5, 1, true, 'Medical', 'roof gone'] }]))[0]);
+
+const info = { sourceId: 42, id: 1, version: 1, category: 'supplies', status: 'active', title: 'Water point', details: 'North gate', hours: '4–5 PM', phone: '', lat: 9.9816, lon: 76.2999 };
+const infoUpdates = [info, { ...info, version: 2, hours: '5–6 PM' }, { ...info, version: 3, status: 'closed', hours: 'Closed today' }, info, { ...info, version: 3, status: 'closed', hours: 'Closed today' }];
+function informationWav() {
+  const params = ggwave.getDefaultParameters();
+  const inst = ggwave.init(params);
+  const pieces = [];
+  try {
+    for (let i = 0; i < infoUpdates.length; i++) {
+      const frame = split(MsgType.INFO, 0x7100 + i, encodeInfo(infoUpdates[i]))[0];
+      const view = ggwave.encode(inst, frame, ggwave.ProtocolId.GGWAVE_PROTOCOL_AUDIBLE_FASTEST, 50);
+      pieces.push(new Float32Array(params.sampleRateOut), new Float32Array(view.buffer.slice(view.byteOffset, view.byteOffset + view.byteLength)), new Float32Array(params.sampleRateOut));
+    }
+  } finally {
+    ggwave.free(inst);
+  }
+  const n = pieces.reduce((sum, piece) => sum + piece.length, 0);
+  const buf = Buffer.alloc(44 + n * 2);
+  buf.write('RIFF', 0); buf.writeUInt32LE(36 + n * 2, 4); buf.write('WAVEfmt ', 8);
+  buf.writeUInt32LE(16, 16); buf.writeUInt16LE(1, 20); buf.writeUInt16LE(1, 22);
+  buf.writeUInt32LE(params.sampleRateOut, 24); buf.writeUInt32LE(params.sampleRateOut * 2, 28);
+  buf.writeUInt16LE(2, 32); buf.writeUInt16LE(16, 34); buf.write('data', 36); buf.writeUInt32LE(n * 2, 40);
+  let offset = 44;
+  for (const piece of pieces) for (const sample of piece) { buf.writeInt16LE(Math.max(-1, Math.min(1, sample)) * 32767, offset); offset += 2; }
+  const path = join(work, 'information.wav');
+  writeFileSync(path, buf);
+  return path;
+}
+const infoWav = informationWav();
 
 // ---------- minimal CDP client ----------
 async function launch(port, micWav) {
@@ -91,7 +123,7 @@ async function launch(port, micWav) {
   };
   await send('Page.enable');
   await send('Runtime.enable');
-  return {
+  const browser = {
     errors,
     evaluate,
     async open(path) {
@@ -104,11 +136,19 @@ async function launch(port, micWav) {
     },
     click: (sel, text) => evaluate(`(() => { const el = [...document.querySelectorAll(${JSON.stringify(sel)})]
       .find((e) => e.textContent.includes(${JSON.stringify(text)})); if (!el) return false; el.click(); return true; })()`),
+    async setOffline() {
+      await send('Network.enable');
+      await send('Network.setCacheDisabled', { cacheDisabled: true });
+      await send('Network.emulateNetworkConditions', { offline: true, latency: 0, downloadThroughput: 0, uploadThroughput: 0 });
+    },
     close() {
       ws.close();
       proc.kill();
+      browsers.delete(browser);
     },
   };
+  browsers.add(browser);
+  return browser;
 }
 
 const text = (s) => `document.body.textContent.includes(${JSON.stringify(s)})`;
@@ -117,8 +157,11 @@ try {
   // 1. Screens render, broadcast completes (silent mic).
   let b = await launch(9333);
   await b.open('');
-  check('home shows both roles', await b.waitFor(`document.querySelectorAll('.role-card').length === 2`));
-  check('supervisor opens', await b.click('.role-card', 'Supervisor'));
+  check('home shows information roles', await b.waitFor(`document.querySelectorAll('.role-card').length === 2 && document.body.textContent.includes('Saved information')`));
+  await b.evaluate(`document.querySelector('details.panel').open = true`);
+  check('forms remain accessible', await b.click('a', 'Supervisor'));
+  await b.waitFor(text('Continue as Supervisor'));
+  check('supervisor opens', await b.click('.role-card', 'Continue as Supervisor'));
   check('builder renders preset', await b.waitFor(`document.querySelectorAll('.field-row').length === 6`));
   const cost = await b.evaluate(`[...document.querySelectorAll('.stat')].map((e) => e.textContent).find((t) => t.includes('bytes')) ?? ''`);
   check('form cost shown', /13 bytes/.test(cost), cost);
@@ -167,9 +210,53 @@ try {
   check('supervisor sends receipt (ACK)', await b.waitFor(text('Sent receipt'), 10000));
   check('no runtime errors (supervisor)', b.errors.length === 0, b.errors.join(' | '));
   b.close();
+
+  // 4. New sender edits persistent cards; each save keeps its identity and advances its version.
+  b = await launch(9336);
+  await b.open('#/broadcast');
+  await b.click('button', 'Use water example');
+  check('sender saves a card', await b.click('button', 'Save card'));
+  check('saved sender card appears', await b.waitFor(`document.querySelectorAll('.info-card').length === 1`));
+  await b.click('button', 'Edit');
+  await b.evaluate(`document.querySelector('[name=hours]').value = '6–7 PM'`);
+  await b.click('button', 'Save changes');
+  const sender = await b.evaluate(`Object.values(JSON.parse(localStorage.getItem('chirp:info-sender')).records)`);
+  check('edit preserves identity and increments version', sender.length === 1 && sender[0].version === 2 && sender[0].hours === '6–7 PM');
+  check('sender broadcasts saved information', await b.click('.info-card button', 'Broadcast'));
+  check('sender shows broadcast finished', await b.waitFor(text('Broadcast finished.'), 30000));
+  check('no runtime errors (information sender)', b.errors.length === 0, b.errors.join(' | '));
+  b.close();
+
+  // 5. Actual sound updates the visible card, then fresh-message replays cannot roll it back.
+  b = await launch(9337, infoWav);
+  await b.open('#/saved');
+  check('saved library opens without microphone gate', await b.waitFor(text('Start listening')));
+  check('receiver starts listening', await b.click('button', 'Start listening'));
+  check('information arrives over mic', await b.waitFor(`document.querySelector('.info-card')?.textContent.includes('4–5 PM')`, 15000));
+  check('location action generated', await b.waitFor(`!!document.querySelector('.info-card a[href*="maps/search/"]')`));
+  check('newer snapshot visibly changes hours', await b.waitFor(`document.querySelector('.info-card')?.textContent.includes('5–6 PM')`, 15000));
+  check('closed update changes same card', await b.waitFor(`document.querySelectorAll('.info-card').length === 1 && !!document.querySelector('.status-closed')`, 15000));
+  await sleep(12000);
+  const storedInfo = await b.evaluate(`JSON.parse(localStorage.getItem('chirp:info-receiver')).records[${JSON.stringify(infoKey(info))}]`);
+  check('old replay does not reopen saved record', storedInfo.version === 3 && storedInfo.status === 'closed');
+  await b.click('button', 'Stop listening');
+  if (OFFLINE) {
+    check('production app is saved for offline use', await b.waitFor(`!!navigator.serviceWorker?.controller && document.querySelector('.offline-notice')?.textContent.includes('Saved for offline use')`, 20000));
+    await b.setOffline();
+  }
+  await b.open('#/saved');
+  check('reload retains closed card without starting mic', await b.waitFor(`!!document.querySelector('.status-closed') && document.body.textContent.includes('Start listening')`));
+  await b.evaluate(`(() => { const search = document.querySelector('input[type=search]'); search.value = 'water'; search.dispatchEvent(new Event('input')); })()`);
+  check('offline search finds saved card', await b.waitFor(`document.querySelectorAll('.info-card').length === 1`));
+  await b.evaluate(`(() => { const select = document.querySelector('select[aria-label="Filter category"]'); select.value = 'contacts'; select.dispatchEvent(new Event('change')); })()`);
+  check('category filter applies to saved information', await b.waitFor(text('No matching information')));
+  if (OFFLINE) check('offline badge shown', await b.waitFor(text('OFFLINE')));
+  check('no runtime errors (information receiver)', b.errors.length === 0, b.errors.join(' | '));
+  b.close();
 } catch (err) {
   check('smoke run', false, err.stack);
 } finally {
+  for (const browser of browsers) browser.close();
   await sleep(800);
   rmSync(work, { recursive: true, force: true, maxRetries: 5, retryDelay: 300 });
 }

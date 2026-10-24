@@ -6,6 +6,22 @@ Record each meaningful project change during the event, newest first. Update thi
 
 Entries before the template adoption were written retroactively from the git history. Their timestamps are the real commit times.
 
+## 2026-10-24T22:57:25+05:30 — Saved disaster information and versioned sound updates
+
+- Changed: new primary information sender/library UI; four categories, coordinates/phone/hours,
+  statuses, persistent cards, search/filter and visible in-place updates. Added binary `INFO` snapshots
+  and newer-revision-only merging; existing forms remain secondary. Added production offline cache,
+  manifest/readiness notice, separate preview port 5174, unit and browser smoke scenarios; updated
+  README/PLAN/AGENTS/SUBMISSION and AI usage. No new dependencies.
+- Why: public announcements should leave exact, searchable information on phones; subsequent
+  broadcasts should update those records without duplicates or older replays reopening closed sites.
+- Validation: **tests, build, browser smoke and real-phone demo not run** because the participant
+  explicitly requested to check later. Earlier passing results do not verify this change.
+- Limitations: one coordinator, unsigned broadcasts, English new UI/authored text retained as sent;
+  reception requires foreground listening. Offline cache requires initial load from trusted HTTPS;
+  phone cache, maps handoff, audio range and complete flow remain unverified. External maps/calls
+  have their own connectivity requirements. WAV export remains deferred.
+
 ## 2026-10-24T22:30:00+05:30 — Flatten repo: app moved to the root
 
 - Changed: Moved everything in `chirp-forms/` (`src/`, `scripts/`, `public/`, `index.html`, `package.json`, `package-lock.json`, `vite.config.js`) to the repository root with `git mv`. Updated paths and commands in `README.md`, `AGENTS.md`, `PLAN.md` and `SUBMISSION.md`. Older changelog entries keep their original `chirp-forms/` paths as history.
