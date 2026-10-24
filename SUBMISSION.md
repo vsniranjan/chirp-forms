@@ -6,7 +6,7 @@ Complete this file during the hackathon and use it to prepare your submission th
 
 - **Project name:** Chirp Forms
 - **Short description:** Disaster-relief crews often work where there is no network. Chirp Forms lets a coordinator broadcast a data-collection form to every phone in earshot as a short chirp of sound. Workers fill entries offline and chirp them back. The coordinator's phone merges the entries and exports CSV. There is no internet, Bluetooth pairing or app install, and it works on any phone with a speaker, a mic and a browser.
-- **Code repository URL:** TODO
+- **Code repository URL:** https://github.com/vsniranjan/chirp-forms
 - **Final submitted implementation commit SHA:** TODO
 - **Working demo URL or local demo steps:** Local demo — see [README › Run the project](README.md#run-the-project) and [Demo walkthrough](README.md#demo-walkthrough).
 - **Demo access requirements:** Two or more Android phones with Chrome, a laptop running the dev server on the same Wi-Fi, and microphone permission. No accounts or credentials.
@@ -17,7 +17,7 @@ Participate solo or in a team of up to 4. Remove unused rows.
 
 | Participant name | GitHub handle | Contribution |
 | --- | --- | --- |
-| TODO | TODO | TODO |
+| Niranjan | [@vsniranjan](https://github.com/vsniranjan) | Solo: idea, product decisions, on-device testing, direction of the AI agent (Devin) that wrote the code |
 
 ## Run and demonstrate
 

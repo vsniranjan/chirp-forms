@@ -6,6 +6,13 @@ Record each meaningful project change during the event, newest first. Update thi
 
 Entries before the template adoption were written retroactively from the git history. Their timestamps are the real commit times.
 
+## 2026-10-24T22:10:00+05:30 — Connect GitHub repository
+
+- Changed: Added `origin` (github.com/vsniranjan/chirp-forms, created from the event template) and merged its initial commit, keeping the filled-in versions of the template files. Team (solo, @vsniranjan) and repo URL are now in `README.md` and `SUBMISSION.md`.
+- Why: Organizers track progress through the GitHub repository.
+- Validation: SSH auth to GitHub OK. `RULES.md` and the PR template are identical to the template. `npm test` was run before push (see the push commit).
+- Limitations: Final submission SHA is still TODO.
+
 ## 2026-10-24T21:59:00+05:30 — Adopt hackathon repository template
 
 - Changed: Added the template's `RULES.md`, `.github/pull_request_template.md`, `README.md`, `CHANGELOG.md`, `AI_USAGE.md`, `SUBMISSION.md` and `.gitignore` rules. Merged the template agent guide into `AGENTS.md` as Part 1, with the project memory as Part 2.

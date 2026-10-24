@@ -227,10 +227,8 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
 - Adopted the organizers' template (github.com/anima-regem/devday-kochi-hackathon-template):
   added RULES.md (verbatim), PR template, README/CHANGELOG/AI_USAGE/SUBMISSION filled with real
   data, merged template agent guide into this file as Part 1. Screenshots deferred by the human.
-- Waiting on human: create the GitHub repo via **Use this template → Create a new repository**
-  (no `gh` CLI here), then share the URL; team names/handles for README + SUBMISSION.
-- Next step once URL is known: `git remote add origin <url>`, `git fetch origin`,
-  `git merge origin/main --allow-unrelated-histories` (resolve conflicts keeping OUR versions of
-  README/AGENTS/CHANGELOG/AI_USAGE/SUBMISSION/.gitignore — they already contain the template text),
-  run `npm test`, then `git push -u origin main`. Never force-push.
-- Then continue M4.
+- Repo: `origin` = `git@github.com:vsniranjan/chirp-forms.git` (SSH works on this machine),
+  branch `main`, template initial commit merged. Solo participant: Niranjan (@vsniranjan).
+  Push after every commit: `git push`. Never force-push.
+- Next step: continue M4 (speaker mode). Screenshots for the repo deferred; add later under
+  `docs/screenshots/`.

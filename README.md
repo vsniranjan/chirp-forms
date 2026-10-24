@@ -26,7 +26,8 @@ Built for the hackathon track **"Works Anyway"** (constraint: no connectivity). 
   so a relief coordinator can push one form to a whole crew and collect their entries with every phone
   in airplane mode. One chirp reaches every phone in the room: no pairing, no QR aiming, and it also
   works through a loudspeaker.
-- **Team:** TODO — participant names and GitHub handles; maximum 4 members.
+- **Team:** Solo — Niranjan ([@vsniranjan](https://github.com/vsniranjan)).
+- **Repository:** https://github.com/vsniranjan/chirp-forms
 - **Working demo:** local demo, see [Run the project](#run-the-project) and [Demo walkthrough](#demo-walkthrough).
 - **Technology stack:** Vanilla JavaScript (ES modules), Vite, [ggwave](https://github.com/ggerganov/ggwave)
   (WASM data-over-sound modem), Web Audio API, localStorage. No backend. Tests with Vitest.
