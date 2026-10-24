@@ -22,6 +22,12 @@ Built for the hackathon track **"Works Anyway"** (constraint: no connectivity). 
 
 **[Event rules](RULES.md)** · **[Agent instructions](AGENTS.md)** · **[Implementation plan](PLAN.md)** · **[Change log](CHANGELOG.md)** · **[AI usage](AI_USAGE.md)**
 
+**Phone demo:** [Open Chirp](https://chirp-offline-relief.socialmacaw16.chatgpt.site/).
+Load this address on each phone while online, wait for **Available offline**, then disable Wi-Fi
+and reload the same address. The initial download needs a connection; subsequent app loading,
+saved-card lookup and sound transfer are designed to work without the laptop or network.
+The local development screen includes an **Open offline demo** link to this production copy.
+
 ## Event
 
 **Devin Hack Kochi** — track: *Works Anyway*. The event has no major AI usage constraints; see [RULES.md](RULES.md).
@@ -88,13 +94,19 @@ npm run smoke:offline -- https://localhost:5174
 
 The production build generates a service worker that saves the app, styles and modem assets.
 Wait for **Available offline** before disconnecting. Development
-mode does not cache the app or display a setup footer. Production and development use different ports to avoid stale cached
+mode links to the hosted offline demo. Production and development use different ports to avoid stale cached
 development pages. Close all Chirp tabs and reopen when the app reports an update is saved.
 
 On phones, offline installation requires a trusted HTTPS site; simply proceeding past the dev
 server's certificate warning may not allow a service worker. A static HTTPS host can serve `dist/`
-without any backend. Relative asset paths support hosting under a subdirectory. No hosting or
-phone-cache installation has been performed as part of this change.
+without any backend. Relative asset paths support hosting under a subdirectory. The Sites project
+is configured in `.openai/hosting.json`; its audience is public by the participant's request.
+Deployment is managed through Sites, while the team GitHub repository remains the source of record.
+
+The hosted website and the old laptop-IP address have separate browser storage. Old saved cards
+stay at the old address; rebroadcast them from the original sender to a receiver on the new address
+if needed. No card data is uploaded to the host. “Available offline” now waits until the service
+worker actually controls the page, not merely until it has activated.
 
 Map buttons open Google Maps with the transmitted coordinates. Offline map use requires coverage
 downloaded beforehand; Google Maps offline walking directions are unavailable. Calls require phone

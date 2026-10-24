@@ -15,6 +15,12 @@ and updating the first after sending the second, with correct data received on t
 UI polish is implemented: teal/white theme, local icons, shorter copy, collapsible optional fields
 and metadata, and clearer listening/search. Runtime/visual verification remains with the participant.
 
+**Offline reload follow-up:** participant hit Chrome's offline screen at the local 5173 development
+URL. A production build has now been generated for Sites deployment at
+`https://chirp-offline-relief.socialmacaw16.chatgpt.site/`, public by explicit participant choice.
+Load/cache that origin once before airplane mode; old local-origin data is separate. Offline-ready
+feedback now waits for actual service-worker control. Phone reload results still need confirmation.
+
 Existing secondary flow — forms that travel by sound. Offline field data collection for disaster-relief crews:
 one chirp broadcasts a form to every phone in earshot, workers fill it offline, entries
 chirp back to the supervisor who merges them and exports CSV. No internet, no Bluetooth

@@ -295,3 +295,14 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
   distance, airplane mode/offline reload, closure/replay tests and detailed UI review were not reported.
 - Remaining: coordinator signatures/trust setup are discussed only, not implemented. Offline/replay
   and automated checks still need their own evidence; don't expand this manual report into those claims.
+
+### 2026-10-25 — offline delivery follow-up (Codex)
+- Human reported Dino screen after disabling Wi-Fi and reloading `https://10.10.19.163:5173/#/saved`.
+  This was the uncached dev origin. Human asked to make it work, not merely add a warning.
+- Production build completed. Prepared Sites project `appgprj_6add1dbe81ec8191919c6a875d069c0e`
+  (`.openai/hosting.json`) with public access explicitly chosen by the human. Intended production
+  URL: `https://chirp-offline-relief.socialmacaw16.chatgpt.site/`; native deployment result confirms live state.
+- Added a dev-page link to the production copy and made offline readiness wait for actual page
+  control. Old local-origin cards do not migrate automatically; they can be broadcast to new-origin receivers.
+- No automated tests/phone demo; build was necessary to produce deployable assets. Next: human loads
+  hosted URL online, waits for Available offline, disconnects and reloads. Signatures still not built.

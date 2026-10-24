@@ -5,7 +5,10 @@ export function prepareOffline() {
   notice.setAttribute('aria-live', 'polite');
   document.querySelector('#app').after(notice);
   if (import.meta.env.DEV) {
-    notice.hidden = true;
+    const demo = document.createElement('a');
+    demo.href = `https://chirp-offline-relief.socialmacaw16.chatgpt.site/${location.hash}`;
+    demo.textContent = 'Open offline demo';
+    notice.append(demo);
     return;
   }
   if (!('serviceWorker' in navigator)) {
@@ -31,6 +34,23 @@ export function prepareOffline() {
       });
     }
     await navigator.serviceWorker.ready;
+    // Activation alone is not enough: this tab must be controlled before promising a reload.
+    if (!navigator.serviceWorker.controller) {
+      await new Promise((done, fail) => {
+        const timeout = setTimeout(() => {
+          navigator.serviceWorker.removeEventListener('controllerchange', controlled);
+          fail(new Error('Offline handler did not take control'));
+        }, 15000);
+        function controlled() {
+          if (!navigator.serviceWorker.controller) return;
+          clearTimeout(timeout);
+          navigator.serviceWorker.removeEventListener('controllerchange', controlled);
+          done();
+        }
+        navigator.serviceWorker.addEventListener('controllerchange', controlled);
+        controlled();
+      });
+    }
     notice.textContent = 'Available offline';
     if (registration.waiting) notice.textContent = 'Update ready. Close Chirp and reopen.';
     registration.addEventListener('updatefound', () => {

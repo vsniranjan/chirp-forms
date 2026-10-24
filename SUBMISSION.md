@@ -8,8 +8,8 @@ Complete this file during the hackathon and use it to prepare your submission th
 - **Short description:** Chirp broadcasts disaster-information cards over sound. Nearby listening phones save places, supplies, contacts and instructions as a searchable local reference. Newer broadcasts update the same records, including closure notices; older replays cannot undo them. Existing two-way form collection remains available as a secondary feature. The participant reports the information flow works; the latest UI polish awaits review.
 - **Code repository URL:** https://github.com/vsniranjan/chirp-forms
 - **Final submitted implementation commit SHA:** TODO
-- **Working demo URL or local demo steps:** Local demo — see [README › Run the project](README.md#run-the-project) and [Demo walkthrough](README.md#demo-walkthrough).
-- **Demo access requirements:** Two or more Android phones with Chrome, a laptop running the dev server on the same Wi-Fi, and microphone permission. No accounts or credentials.
+- **Working demo URL or local demo steps:** Hosted production address: https://chirp-offline-relief.socialmacaw16.chatgpt.site/ (publication tracked by Sites deployment). Load online once and wait for Available offline, then disconnect and reload. See README for local development and information walkthrough.
+- **Demo access requirements:** Two or more Android phones with Chrome, an initial connection to load/cache the hosted app, and microphone permission. Public link, no accounts. Laptop/Wi-Fi are needed only for the alternative local-development setup.
 
 ## Participants
 

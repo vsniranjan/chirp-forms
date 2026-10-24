@@ -6,6 +6,20 @@ Record each meaningful project change during the event, newest first. Update thi
 
 Entries before the template adoption were written retroactively from the git history. Their timestamps are the real commit times.
 
+## 2026-10-25T02:36:59+05:30 — Prepare hosted offline demo and reliable readiness
+
+- Changed: Sites production-hosting manifest, development link to the hosted copy, and offline
+  readiness that waits for the service worker to control the page. Updated setup and handoff docs.
+- Why: participant reported Chrome's offline screen after reloading the laptop development URL
+  on port 5173. That server does not precache the app, and its certificate is unsuitable for a
+  straightforward phone offline setup. Publish the production build at a normal HTTPS address.
+- Validation: production build completed successfully. Deployment is handled through native Sites
+  tools; success must be confirmed by their returned deployment state. No test suites or phone
+  demo were run, preserving the participant's preference. Existing ggwave fs/path browser-external
+  warnings remain build warnings; the build completed.
+- Limitations: phones still need to load/cache the new address online once. Old LAN-address cards
+  remain in that origin's storage. Public access was explicitly selected by the participant.
+
 ## 2026-10-25T02:25:13+05:30 — Record participant's information-flow checks
 
 - Changed: README, PLAN, AGENTS, SUBMISSION and AI_USAGE status records.
