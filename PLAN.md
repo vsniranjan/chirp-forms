@@ -73,7 +73,7 @@ Codec:
 
 ## Milestones
 
-- [ ] **M0 — Spike.** Vite project, ggwave loaded, Send/Listen page. Phone-to-phone test with
+- [x] **M0 — Spike.** Vite project, ggwave loaded, Send/Listen page. Phone-to-phone test with
       `AUDIBLE_FAST` and `AUDIBLE_FASTEST`. Record: real bytes/sec, whether raw bytes survive the
       string API, max working distance. *These numbers set every cap above.*
 - [ ] **M1 — Protocol core.** `frame.js`, `chunker.js`, `codec.js` + Vitest round-trip tests.
@@ -116,7 +116,8 @@ Revised budgets (AUDIBLE_FASTEST is the demo default; FAST is the noisy-room fal
 - One entry chirp-back target <= 6 s  ->  <= ~25 B  ->  8 B header + 3 B ids + ~12 B values. OK.
 - Max useful chunk = 128 B payload = 18 s on FASTEST. Anything >1 chunk is a "long send" in the UI.
 
-Phone-to-phone over air (fill in on device):
+Phone-to-phone over air: **confirmed working** (2026-10-24, user's two Android phones, link-test
+page, byte-exact RX OK). Per-distance / noisy-room numbers still to be filled in:
 
 | Protocol | Success 5/5 at 0.5 m | at 2 m | at 5 m (speaker) | Notes |
 |---|---|---|---|---|
