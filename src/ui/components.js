@@ -1,6 +1,7 @@
 import { resetData, settings } from '../store.js';
 import { Protocol } from '../audio/ggwave.js';
 import { MsgType } from '../protocol/frame.js';
+import { icon } from './icons.js';
 
 // Build DOM without innerHTML: labels arrive over the air from untrusted phones.
 export function h(tag, props = {}, ...children) {
@@ -27,6 +28,15 @@ export function netBadge() {
   window.addEventListener('offline', update);
   update();
   return el;
+}
+
+export function brand() {
+  return h('a', { href: '#/', class: 'brand', 'aria-label': 'Chirp home' },
+    h('span', { class: 'brand-mark' }, icon('waves', 24)), 'Chirp');
+}
+
+export function appBar() {
+  return h('div', { class: 'app-bar' }, brand(), netBadge());
 }
 
 const PROTOCOL_LABELS = {
@@ -63,7 +73,7 @@ export function header(role, { onSettingsChange = () => {}, showRepeat = false }
   return h(
     'header',
     { class: 'top' },
-    h('h1', {}, h('span', {}, 'Chirp Forms'), netBadge()),
+    appBar(),
     h(
       'div',
       { class: 'row between' },
@@ -71,7 +81,7 @@ export function header(role, { onSettingsChange = () => {}, showRepeat = false }
       h(
         'details',
         { class: 'settings' },
-        h('summary', {}, 'Settings'),
+        h('summary', {}, icon('settings', 18), 'Settings'),
         h('label', {}, 'Sound mode'),
         protocol,
         h('label', {}, 'Volume ', volLabel),

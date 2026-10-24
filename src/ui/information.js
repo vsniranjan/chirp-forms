@@ -4,6 +4,9 @@ import { split } from '../protocol/chunker.js';
 import { decodeInfo, encodeInfo, findInfo, infoKey, INFO_CATEGORIES, INFO_LIMITS, INFO_STATUSES, mergeInfo, normalizeInfo } from '../protocol/info.js';
 import { deviceId, infoReceiverStore, infoSenderStore, settings } from '../store.js';
 import { h, header, keepAwake, sendOptions } from './components.js';
+import { icon } from './icons.js';
+
+const categoryIcons = { places: 'pin', supplies: 'supplies', contacts: 'phone', instructions: 'note' };
 
 const emptyCard = () => ({ category: 'places', status: 'active', title: '', details: '', phone: '', hours: '', lat: null, lon: null });
 const exampleCard = () => ({ ...emptyCard(), category: 'supplies', title: 'Water point — North gate', details: 'Bring 2 empty containers.', hours: '4:30–5:00 PM', lat: 9.9816, lon: 76.2999 });
@@ -15,21 +18,22 @@ const feedback = (el, text, bad = false) => {
 function recordCard(record, { recent = false, actions = [] } = {}) {
   const coordinates = record.lat !== null && record.lat !== undefined;
   const mapUrl = coordinates ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${record.lat},${record.lon}`)}` : null;
-  return h('article', { class: `panel info-card${recent ? ' info-changed' : ''}`, 'data-record-key': infoKey(record) },
+  return h('article', { class: `panel info-card category-${record.category}${recent ? ' info-changed' : ''}`, 'data-record-key': infoKey(record) },
     h('div', { class: 'row between' },
-      h('span', { class: 'stat' }, INFO_CATEGORIES[record.category]),
+      h('span', { class: 'category-label' }, icon(categoryIcons[record.category], 17), INFO_CATEGORIES[record.category]),
       h('span', { class: `badge info-status status-${record.status}` }, INFO_STATUSES[record.status])),
     h('h2', { class: 'info-title' }, record.title),
     record.details && h('p', { class: 'info-details' }, record.details),
-    record.hours && h('div', {}, h('span', { class: 'stat' }, 'Hours: '), record.hours),
-    coordinates && h('div', { class: 'stat' }, `Location: ${record.lat}, ${record.lon}`),
-    record.phone && h('div', {}, h('span', { class: 'stat' }, 'Phone: '), record.phone),
-    h('div', { class: 'stat' }, `Coordinator ${record.sourceId.toString(16).toUpperCase()} · Version ${record.version}`),
-    record.receivedAt && h('div', { class: 'stat info-updated' }, recent ? 'Updated just now' : `Saved ${new Date(record.receivedAt).toLocaleString()}`),
-    h('div', { class: 'row' },
-      mapUrl && h('a', { class: 'btn secondary', href: mapUrl, target: '_blank', rel: 'noopener noreferrer' }, 'Open in Maps'),
-      record.phone && h('a', { class: 'btn secondary', href: `tel:${record.phone.replace(/[ ()-]/g, '')}` }, 'Call'),
-      actions)
+    record.hours && h('div', { class: 'info-fact' }, icon('clock', 17), record.hours),
+    record.phone && h('div', { class: 'info-fact' }, icon('phone', 17), record.phone),
+    record.receivedAt && h('div', { class: `info-fact stat${recent ? ' info-updated' : ''}` }, icon('check', 16), recent ? 'Updated just now' : `Saved ${new Date(record.receivedAt).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}`),
+    (mapUrl || record.phone) && h('div', { class: 'row card-links' },
+      mapUrl && h('a', { class: 'btn secondary', href: mapUrl, target: '_blank', rel: 'noopener noreferrer' }, icon('pin', 18), 'Open in Maps'),
+      record.phone && h('a', { class: 'btn secondary', href: `tel:${record.phone.replace(/[ ()-]/g, '')}` }, icon('phone', 18), 'Call')),
+    h('details', { class: 'card-meta' }, h('summary', {}, 'More details'),
+      coordinates && h('div', { class: 'stat' }, `${record.lat}, ${record.lon}`),
+      h('div', { class: 'stat' }, `Coordinator ${record.sourceId.toString(16).toUpperCase()} · Version ${record.version}`)),
+    actions.length > 0 && h('div', { class: 'row card-actions' }, actions)
   );
 }
 
@@ -43,8 +47,8 @@ export function mountInfoSender(app, getRadio) {
   const cost = h('div', { class: 'stat', 'aria-live': 'polite' });
   const list = h('div', { class: 'stack' });
   const fields = {};
-  const saveButton = h('button', { type: 'submit' }, 'Save card');
-  const editorTitle = h('h2', {}, 'New information card');
+  const saveButton = h('button', { type: 'submit' }, icon('save', 18), 'Save card');
+  const editorTitle = h('span', {}, 'New card');
 
   const input = (name, title, props = {}) => {
     const control = h(name === 'details' ? 'textarea' : 'input', { name, ...props, oninput: refreshCost });
@@ -73,10 +77,11 @@ export function mountInfoSender(app, getRadio) {
       const frames = split(MsgType.INFO, 0, bytes);
       const repeat = settings.get().repeat;
       const seconds = radio ? frames.reduce((sum, frame) => sum + radio.airtime(frame, sendOptions().protocol), 0) * repeat + (repeat - 1) * 0.6 : null;
-      feedback(cost, `${bytes.length} bytes · ${frames.length} chirp${frames.length === 1 ? '' : 's'} per broadcast${seconds === null ? '' : ` · ~${seconds.toFixed(1)} seconds (×${repeat})`}`);
+      feedback(cost, seconds === null ? `${bytes.length} bytes` : `About ${Math.ceil(seconds)} seconds to broadcast`);
       saveButton.disabled = busy;
     } catch (err) {
-      feedback(cost, err.message, true);
+      const blank = !fields.title.value.trim();
+      feedback(cost, blank ? 'Add a title to get started.' : err.message, !blank);
       saveButton.disabled = true;
     }
   }
@@ -84,8 +89,10 @@ export function mountInfoSender(app, getRadio) {
   function fill(record, key = null) {
     editing = key;
     for (const name of Object.keys(fields)) fields[name].value = record[name] ?? '';
-    editorTitle.textContent = key ? 'Edit information card' : 'New information card';
-    saveButton.textContent = key ? 'Save changes' : 'Save card';
+    editorTitle.textContent = key ? 'Edit card' : 'New card';
+    saveButton.replaceChildren(icon('save', 18), key ? 'Save changes' : 'Save card');
+    editorShell.open = true;
+    extraFields.open = !!(record.hours || record.phone || record.lat !== null);
     refreshCost();
   }
 
@@ -98,11 +105,11 @@ export function mountInfoSender(app, getRadio) {
       const repeat = settings.get().repeat;
       const seconds = radio ? frames.reduce((sum, frame) => sum + radio.airtime(frame, sendOptions().protocol), 0) * repeat + (repeat - 1) * 0.6 : null;
       return recordCard(record, { actions: [
-        h('span', { class: 'stat' }, `${bytes.length} bytes${seconds === null ? '' : ` · ~${seconds.toFixed(1)} s (×${repeat})`}`),
-        h('button', { class: 'secondary', disabled: busy, onclick: () => { fill(record, key); fields.title.focus(); } }, 'Edit'),
-        h('button', { disabled: busy || !radio, onclick: () => broadcast(record) }, 'Broadcast'),
+        h('span', { class: 'stat card-airtime', title: `${bytes.length} bytes · ${repeat} broadcast${repeat === 1 ? '' : 's'}` }, icon('clock', 16), seconds === null ? 'Preparing sound…' : `~${Math.ceil(seconds)} sec`),
+        h('button', { class: 'secondary', disabled: busy, onclick: () => { fill(record, key); fields.title.focus(); } }, icon('edit', 18), 'Edit'),
+        h('button', { disabled: busy || !radio, onclick: () => broadcast(record) }, icon('broadcast', 18), 'Broadcast'),
       ] });
-    }) : [h('div', { class: 'panel stat' }, 'Save your first card, then broadcast it to nearby listening phones.')]));
+    }) : [h('div', { class: 'empty-state compact' }, icon('note', 28), h('p', {}, 'Your cards will appear here.'))]));
   }
 
   async function broadcast(record) {
@@ -117,7 +124,7 @@ export function mountInfoSender(app, getRadio) {
       const seconds = frames.reduce((sum, frame) => sum + radio.airtime(frame, sendOptions().protocol), 0) * repeat + (repeat - 1) * 0.6;
       feedback(message, `Broadcasting “${record.title}” · ~${seconds.toFixed(1)} seconds…`);
       await link.broadcast(MsgType.INFO, bytes, { repeat });
-      feedback(message, 'Broadcast finished. Nearby listening phones can save this card.');
+      feedback(message, 'Broadcast finished.');
     } catch (err) {
       feedback(message, `Broadcast failed: ${err.message}`, true);
     } finally {
@@ -128,7 +135,16 @@ export function mountInfoSender(app, getRadio) {
     }
   }
 
-  const editor = h('form', { class: 'panel', onsubmit: (event) => {
+  const extraFields = h('details', { class: 'extra-fields' },
+    h('summary', {}, icon('pin', 17), 'Location, hours & phone'),
+    h('div', { class: 'stack optional-fields' },
+      input('hours', 'Opening hours', { maxLength: INFO_LIMITS.hours, placeholder: '4:30–5:00 PM' }),
+      h('div', { class: 'coordinate-fields' },
+        input('lat', 'Latitude', { type: 'number', step: 'any', min: -90, max: 90, placeholder: '9.9816' }),
+        input('lon', 'Longitude', { type: 'number', step: 'any', min: -180, max: 180, placeholder: '76.2999' })),
+      input('phone', 'Phone', { type: 'tel', maxLength: INFO_LIMITS.phone })));
+
+  const editor = h('form', { class: 'card-editor', onsubmit: (event) => {
     event.preventDefault();
     if (busy) return;
     try {
@@ -139,30 +155,28 @@ export function mountInfoSender(app, getRadio) {
       state = next;
       fill(record, infoKey(record));
       renderList();
-      feedback(message, 'Saved on this phone. Tap Broadcast on the card to send it.');
+      editorShell.open = false;
+      feedback(message, 'Card saved. Ready to broadcast.');
     } catch (err) {
       feedback(message, `Could not save: ${err.message}`, true);
     }
   } },
-  editorTitle,
-  select('category', 'Category', INFO_CATEGORIES),
+  h('div', { class: 'coordinate-fields' }, select('category', 'Category', INFO_CATEGORIES), select('status', 'Status', INFO_STATUSES)),
   input('title', 'Title', { required: true, maxLength: INFO_LIMITS.title, placeholder: 'Water point — North gate' }),
   input('details', 'Short details', { maxLength: INFO_LIMITS.details, placeholder: 'Bring 2 empty containers.' }),
-  input('hours', 'Opening hours (optional)', { maxLength: INFO_LIMITS.hours, placeholder: '4:30–5:00 PM' }),
-  h('div', { class: 'coordinate-fields' },
-    input('lat', 'Latitude (optional)', { type: 'number', step: 'any', min: -90, max: 90, placeholder: '9.9816' }),
-    input('lon', 'Longitude (optional)', { type: 'number', step: 'any', min: -180, max: 180, placeholder: '76.2999' })),
-  input('phone', 'Phone (optional)', { type: 'tel', maxLength: INFO_LIMITS.phone }),
-  select('status', 'Status', INFO_STATUSES),
+  extraFields,
   cost,
   h('div', { class: 'row' }, saveButton,
-    h('button', { type: 'button', class: 'secondary', onclick: () => fill(emptyCard()) }, 'New card'),
-    h('button', { type: 'button', class: 'secondary', onclick: () => fill(exampleCard()) }, 'Use water example')));
+    h('button', { type: 'button', class: 'text-button', onclick: () => fill(exampleCard()) }, 'Use water example')));
+  const editorShell = h('details', { class: 'panel editor-shell' }, h('summary', {}, icon('plus', 19), editorTitle), editor);
 
   app.replaceChildren(header('Broadcast information', { onSettingsChange: () => { refreshCost(); renderList(); }, showRepeat: true }),
-    h('p', { class: 'tagline' }, 'Send useful details once. Nearby phones keep them and receive your updates.'),
-    message, h('h2', { class: 'section-title' }, 'Your saved cards'), list, editor);
+    h('div', { class: 'page-heading' },
+      h('div', {}, h('h1', {}, 'Your cards'), h('p', { class: 'tagline' }, 'A useful update, one chirp away.')),
+      h('button', { class: 'new-card-button', onclick: () => { fill(emptyCard()); fields.title.focus(); } }, icon('plus', 18), 'New card')),
+    message, editorShell, list);
   fill(emptyCard());
+  editorShell.open = Object.keys(state.records).length === 0;
   renderList();
   getRadio().then((ready) => {
     radio = ready;
@@ -183,18 +197,20 @@ export function mountInfoReceiver(app, getRadio) {
   let highlightTimer;
   const list = h('div', { class: 'stack info-list' });
   const count = h('div', { class: 'stat' });
-  const message = h('div', { class: 'stat', role: 'status', 'aria-live': 'polite' }, 'Your saved information stays here. Start listening to receive updates.');
-  const search = h('input', { type: 'search', placeholder: 'Search water, shelter, contacts…', 'aria-label': 'Search saved information', oninput: render });
+  const message = h('div', { class: 'stat', role: 'status', 'aria-live': 'polite' }, 'Start listening to receive nearby updates.');
+  const search = h('input', { type: 'search', placeholder: 'Find water, shelter, contacts…', 'aria-label': 'Search saved information', oninput: render });
   const category = h('select', { 'aria-label': 'Filter category', onchange: render },
     h('option', { value: '' }, 'All categories'), Object.entries(INFO_CATEGORIES).map(([value, label]) => h('option', { value }, label)));
-  const listenButton = h('button', { onclick: toggleListening }, 'Start listening');
+  const listenButton = h('button', { class: 'listen-button', onclick: toggleListening }, icon('mic', 21), 'Start listening');
 
   function render() {
     const records = findInfo(state.records, search.value, category.value);
-    count.textContent = `${Object.keys(state.records).length} saved · ${records.length} shown`;
+    count.textContent = search.value || category.value ? `${records.length} of ${Object.keys(state.records).length} saved` : `${records.length} saved card${records.length === 1 ? '' : 's'}`;
     list.replaceChildren(...(records.length
       ? records.map((record) => recordCard(record, { recent: infoKey(record) === recentKey }))
-      : [h('div', { class: 'panel stat' }, Object.keys(state.records).length ? 'No matching information. Try another search or category.' : 'No saved information yet. Start listening, then ask the coordinator to broadcast a card.')]));
+      : [h('div', { class: 'empty-state' }, icon(Object.keys(state.records).length ? 'search' : 'library', 38),
+        h('h2', {}, Object.keys(state.records).length ? 'No matching information' : 'A little quiet here'),
+        h('p', {}, Object.keys(state.records).length ? 'Try another word or category.' : 'Start listening. New cards will appear here.'))]));
   }
 
   function receive(payload) {
@@ -236,9 +252,9 @@ export function mountInfoReceiver(app, getRadio) {
         listening = true;
         keepAwake();
       }
-      listenButton.textContent = listening ? 'Stop listening' : 'Start listening';
-      listenButton.classList.toggle('pulse', listening);
-      feedback(message, listening ? 'Listening · keep this screen open to receive and save updates.' : 'Listening stopped. Saved information is still available.');
+      listenButton.replaceChildren(icon(listening ? 'stop' : 'mic', 21), listening ? 'Stop listening' : 'Start listening');
+      listenButton.classList.toggle('is-listening', listening);
+      feedback(message, listening ? 'Listening · keep this screen open.' : 'Listening paused. Your cards are saved.');
     } catch (err) {
       feedback(message, `Could not start listening: ${err.message}. Allow microphone access and try again.`, true);
     } finally {
@@ -247,9 +263,11 @@ export function mountInfoReceiver(app, getRadio) {
   }
 
   app.replaceChildren(header('Saved information'),
-    listenButton, message,
-    h('section', { class: 'panel' }, h('h2', {}, 'Find information'), search, category, count),
+    h('div', { class: 'page-heading' }, h('div', {}, h('h1', {}, 'Your information'), h('p', { class: 'tagline' }, 'Saved here. Easy to find.'))),
+    h('section', { class: 'listen-panel' }, h('span', { class: 'listen-symbol' }, icon('waves', 30)), h('div', { class: 'listen-copy' }, listenButton, message)),
+    h('section', { class: 'search-panel' }, h('label', { class: 'search-field' }, icon('search', 20), search), category),
+    count,
     list,
-    h('p', { class: 'stat' }, 'Cards are saved on this phone. Maps may need downloaded coverage or internet; calls need phone service.'));
+    h('p', { class: 'library-footnote' }, icon('shield', 15), 'Saved on this phone. Maps and calls may need connectivity.'));
   render();
 }

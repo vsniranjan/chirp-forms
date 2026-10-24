@@ -5,16 +5,16 @@ export function prepareOffline() {
   notice.setAttribute('aria-live', 'polite');
   document.querySelector('#app').after(notice);
   if (import.meta.env.DEV) {
-    notice.textContent = 'Development mode · offline loading is available in the production build.';
+    notice.hidden = true;
     return;
   }
   if (!('serviceWorker' in navigator)) {
-    notice.textContent = 'Offline loading is unavailable in this browser. Your saved cards remain on this phone.';
+    notice.textContent = 'Offline loading unavailable. Your cards are still saved.';
     return;
   }
-  notice.textContent = 'Saving the app for offline use…';
+  notice.textContent = 'Preparing offline access…';
   register().catch(() => {
-    notice.textContent = 'Could not save the app for offline use. Reconnect and reload from a trusted HTTPS address.';
+    notice.textContent = 'Offline setup failed. Try reloading online.';
   });
 
   async function register() {
@@ -31,13 +31,13 @@ export function prepareOffline() {
       });
     }
     await navigator.serviceWorker.ready;
-    notice.textContent = 'Saved for offline use · ready for airplane mode.';
-    if (registration.waiting) notice.textContent = 'App update saved · close all Chirp tabs and reopen to use it.';
+    notice.textContent = 'Available offline';
+    if (registration.waiting) notice.textContent = 'Update ready. Close Chirp and reopen.';
     registration.addEventListener('updatefound', () => {
       const worker = registration.installing;
       worker?.addEventListener('statechange', () => {
         if (worker.state === 'installed' && navigator.serviceWorker.controller) {
-          notice.textContent = 'App update saved · close all Chirp tabs and reopen to use it.';
+          notice.textContent = 'Update ready. Close Chirp and reopen.';
         }
       });
     });

@@ -6,9 +6,15 @@ later broadcasts update the same cards. People can search the information afterw
 remembering an announcement or copying down coordinates. Existing two-way forms remain available
 under **Forms and diagnostics**.
 
-**Latest change: implemented, not runtime-verified.** The participant explicitly requested that
-Codex leave builds, test runs and the phone demo to them. Earlier passing results below describe
-the previous forms implementation, not verification of the new information flow.
+**Current status:** the participant reports that the information flow works. Specific device,
+range and offline-reload results have not been recorded. The latest UI polish is implemented but
+has not been runtime-verified; Codex continues to leave test/build/demo runs to the participant.
+
+The interface now uses a light teal theme, local line icons and shorter copy. **New card** opens
+the editor; optional location/hours/phone fields expand when needed. Saving closes the editor so
+the card's **Broadcast** action is easy to reach. Receiver cards keep raw coordinates and source
+metadata under **More details**; search, status and useful actions stay visible. No external fonts,
+icon downloads or new dependencies are required.
 
 Built for the hackathon track **"Works Anyway"** (constraint: no connectivity). Target users:
 **disaster-relief crews** doing rapid needs assessments after floods or earthquakes.
@@ -80,8 +86,8 @@ npm run smoke:offline -- https://localhost:5174
 ```
 
 The production build generates a service worker that saves the app, styles and modem assets.
-Wait for **Saved for offline use · ready for airplane mode** before disconnecting. Development
-mode does not cache the app. Production and development use different ports to avoid stale cached
+Wait for **Available offline** before disconnecting. Development
+mode does not cache the app or display a setup footer. Production and development use different ports to avoid stale cached
 development pages. Close all Chirp tabs and reopen when the app reports an update is saved.
 
 On phones, offline installation requires a trusted HTTPS site; simply proceeding past the dev

@@ -6,6 +6,21 @@ Record each meaningful project change during the event, newest first. Update thi
 
 Entries before the template adoption were written retroactively from the git history. Their timestamps are the real commit times.
 
+## 2026-10-24T23:46:07+05:30 — Light theme and simpler information screens
+
+- Changed: replaced the dark UI with warm white panels, teal accents, readable status colours,
+  rounded controls and responsive spacing. Added local SVG icons and a compact Chirp app bar;
+  simplified home cards, sender/editor and receiver listening/search views. Optional fields and
+  record metadata now expand on demand; saving closes the editor; airtime uses a short seconds
+  label. Updated app icon/theme metadata, offline status copy and matching smoke selector.
+- Why: participant confirmed the information flow works and requested lighter colours, icons,
+  less text and a more approachable UI. No protocol/storage changes or dependencies added.
+- Validation: participant confirmation applies to the previous information flow; details of which
+  scenarios/devices were checked were not provided. No build, tests, browser preview or demo run
+  for this UI change, continuing the participant's instruction to leave checks to them.
+- Limitations: visual layout and new collapsed-editor interactions remain unverified at runtime.
+  Existing offline-map, foreground-listening and initial-cache requirements still apply.
+
 ## 2026-10-24T22:57:25+05:30 — Saved disaster information and versioned sound updates
 
 - Changed: new primary information sender/library UI; four categories, coordinates/phone/hours,

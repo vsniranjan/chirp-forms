@@ -74,8 +74,9 @@ The 30-minute target is this repository's working convention. It does not replac
 **Current primary flow (Codex session 3):** broadcast disaster-information cards over sound;
 receivers save them locally, search later, and apply newer revisions to the same cards. Categories:
 places, supplies, contacts, instructions. Existing forms below remain secondary, accessible from
-the home screen. The participant explicitly asked not to run checks/demo this session: implementation
-and test scenarios are written, but all new behavior/build/offline caching is unverified.
+the home screen. The participant later confirmed the information flow works (device/range/offline
+details unspecified). They asked Codex to leave checks/demo runs to them; automated scenarios and
+the latest light UI polish remain unrun/unverified.
 
 **Chirp Forms** — a static PWA that sends small forms between phones using *sound* (ggwave FSK
 modem over speaker/mic). A supervisor broadcasts a form with one chirp; every phone in earshot
@@ -169,7 +170,9 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
   agent did the work, `AI_USAGE.md` (optional per the event, but this project keeps it). Agents
   in use so far: Devin; Codex may join later.
 - Push to `origin` after each commit once the remote is set up and the human has authorized it.
-- UI must be thumb-friendly and readable from a projector: big buttons, dark theme, high contrast.
+- UI must be thumb-friendly and readable from a projector: big buttons and high contrast.
+  The human now prefers a light warm-white/teal theme with simple icons and concise copy; this
+  supersedes the earlier dark-theme direction. Keep SVG icons local and show optional fields on demand.
   Show the OFFLINE badge prominently — the constraint is the demo.
 - Default protocol is `AUDIBLE_NORMAL` (most noise-robust, still ~3 s per message);
   FAST/FASTEST selectable in a settings corner for quiet rooms.
@@ -271,3 +274,14 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
 - Next: human checks the water-card create -> hours update -> closure -> old replay -> offline search
   flow; run documented checks when authorized. Phone PWA needs trusted HTTPS; local self-signed dev
   loading alone does not establish offline readiness. WAV/loudspeaker export remains deferred.
+
+### 2026-10-24 — session 4 (Codex)
+- Human confirmed the information feature works, then requested a lighter, friendlier UI with less
+  text and icons. Exact prior test coverage was not supplied; don't assume offline/range results.
+- Implemented light warm-white/teal styling, local SVG icons, Chirp app bar and home role cards,
+  a collapsible sender editor with optional fields, simpler information cards with metadata under
+  More details, and a clearer listening/search view. Offline readiness now says “Available offline”.
+- No protocol, storage or dependency changes. Existing forms inherit the light theme and remain
+  secondary. No tests/build/browser previews/demo runs, respecting the human's standing preference.
+- Next: human reviews the new UI on phones; continue from their feedback. Note that saving now
+  closes the editor; Edit/New card reopens it. New icons live in `src/ui/icons.js`.

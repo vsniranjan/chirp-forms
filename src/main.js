@@ -1,6 +1,7 @@
 import './style.css';
 import { createRadio } from './audio/ggwave.js';
-import { h, keepAwake, netBadge } from './ui/components.js';
+import { appBar, h, keepAwake } from './ui/components.js';
+import { icon } from './ui/icons.js';
 import { mountSupervisor } from './ui/supervisor.js';
 import { mountWorker } from './ui/worker.js';
 import { mountDiag } from './ui/diag.js';
@@ -8,8 +9,8 @@ import { mountInfoSender, mountInfoReceiver } from './ui/information.js';
 import { prepareOffline } from './offline.js';
 
 const ROUTES = {
-  broadcast: { mount: mountInfoSender, passive: true, title: 'Broadcast information', blurb: 'Create useful cards and broadcast updates to nearby phones.' },
-  saved: { mount: mountInfoReceiver, passive: true, title: 'Saved information', blurb: 'Receive, keep and search useful details. No copying or remembering.' },
+  broadcast: { mount: mountInfoSender, passive: true, title: 'Broadcast information', blurb: 'Share a card. Keep everyone updated.' },
+  saved: { mount: mountInfoReceiver, passive: true, title: 'Saved information', blurb: 'Listen, save and find what you need.' },
   supervisor: { mount: mountSupervisor, title: 'Supervisor', blurb: 'Build a form, broadcast it, collect entries, export CSV.' },
   worker: { mount: mountWorker, title: 'Field worker', blurb: 'Receive the form, fill entries offline, send them back.' },
   diag: { mount: mountDiag, title: 'Link test', blurb: 'Raw send/receive test between two phones.' },
@@ -39,12 +40,19 @@ function go(route) {
 
 function home() {
   app.replaceChildren(
-    h('h1', {}, h('span', {}, 'Chirp Forms'), netBadge()),
-    h('p', { class: 'tagline' }, 'Useful information, carried by sound. Save it, search it, and keep it up to date — without a network.'),
+    appBar(),
+    h('section', { class: 'home-intro' },
+      h('span', { class: 'eyebrow' }, icon('waves', 16), 'A little sound. Useful information.'),
+      h('h1', { class: 'home-title' }, 'Keep good information', h('br'), h('span', {}, 'within reach.')),
+      h('p', { class: 'tagline' }, 'Share nearby. Save on your phone. No network needed.')),
     ...['broadcast', 'saved'].map((r) =>
-      h('button', { class: 'role-card', onclick: () => go(r) }, h('div', { class: 'role-title' }, ROUTES[r].title), h('div', { class: 'stat' }, ROUTES[r].blurb))
+      h('button', { class: `role-card role-${r}`, onclick: () => go(r) },
+        h('span', { class: 'role-icon' }, icon(r === 'broadcast' ? 'broadcast' : 'library', 28)),
+        h('span', { class: 'role-copy' }, h('span', { class: 'role-title' }, ROUTES[r].title), h('span', { class: 'stat' }, ROUTES[r].blurb)),
+        icon('arrow'))
     ),
-    h('details', { class: 'panel' }, h('summary', {}, 'Forms and diagnostics'),
+    h('div', { class: 'home-footnote' }, icon('shield', 17), 'Saved on your phone. Ready when you need it.'),
+    h('details', { class: 'panel secondary-tools' }, h('summary', {}, 'Forms and diagnostics'),
       h('div', { class: 'row' },
         h('a', { href: '#/supervisor', class: 'btn secondary' }, 'Supervisor'),
         h('a', { href: '#/worker', class: 'btn secondary' }, 'Field worker'),
@@ -55,7 +63,7 @@ function home() {
 // Audio needs a user gesture, so a reload on a role URL shows one tap-to-start button.
 function gate(route) {
   app.replaceChildren(
-    h('h1', {}, h('span', {}, 'Chirp Forms'), netBadge()),
+    appBar(),
     h('button', { class: 'role-card', onclick: () => start(route) }, h('div', { class: 'role-title' }, `Continue as ${ROUTES[route].title}`), h('div', { class: 'stat' }, 'Tap to start the microphone')),
     h('a', { href: '#/', class: 'btn secondary small' }, 'Switch role')
   );

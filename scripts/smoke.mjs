@@ -241,7 +241,7 @@ try {
   check('old replay does not reopen saved record', storedInfo.version === 3 && storedInfo.status === 'closed');
   await b.click('button', 'Stop listening');
   if (OFFLINE) {
-    check('production app is saved for offline use', await b.waitFor(`!!navigator.serviceWorker?.controller && document.querySelector('.offline-notice')?.textContent.includes('Saved for offline use')`, 20000));
+    check('production app is saved for offline use', await b.waitFor(`!!navigator.serviceWorker?.controller && document.querySelector('.offline-notice')?.textContent.includes('Available offline')`, 20000));
     await b.setOffline();
   }
   await b.open('#/saved');

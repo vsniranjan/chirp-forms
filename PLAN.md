@@ -10,6 +10,10 @@ One-way information broadcasting is the current demo; existing forms remain seco
 **Verification override:** the participant asked Codex not to run checks or a demo for this change.
 New tests and smoke scenarios are written but unrun; build/offline/phone verification is pending.
 
+**Latest:** participant reports the information flow works (specific checks not recorded). Light
+UI polish is implemented: teal/white theme, local icons, shorter copy, collapsible optional fields
+and metadata, and clearer listening/search. Runtime/visual verification remains with the participant.
+
 Existing secondary flow — forms that travel by sound. Offline field data collection for disaster-relief crews:
 one chirp broadcasts a form to every phone in earshot, workers fill it offline, entries
 chirp back to the supervisor who merges them and exports CSV. No internet, no Bluetooth

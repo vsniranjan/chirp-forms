@@ -5,7 +5,7 @@ Complete this file during the hackathon and use it to prepare your submission th
 ## Project
 
 - **Project name:** Chirp Forms
-- **Short description:** Chirp broadcasts disaster-information cards over sound. Nearby listening phones save places, supplies, contacts and instructions as a searchable local reference. Newer broadcasts update the same records, including closure notices; older replays cannot undo them. Existing two-way form collection remains available as a secondary feature. New implementation is pending participant verification.
+- **Short description:** Chirp broadcasts disaster-information cards over sound. Nearby listening phones save places, supplies, contacts and instructions as a searchable local reference. Newer broadcasts update the same records, including closure notices; older replays cannot undo them. Existing two-way form collection remains available as a secondary feature. The participant reports the information flow works; the latest UI polish awaits review.
 - **Code repository URL:** https://github.com/vsniranjan/chirp-forms
 - **Final submitted implementation commit SHA:** TODO
 - **Working demo URL or local demo steps:** Local demo — see [README › Run the project](README.md#run-the-project) and [Demo walkthrough](README.md#demo-walkthrough).
@@ -26,7 +26,7 @@ Participate solo or in a team of up to 4. Remove unused rows.
 - **Required environment variable names:** None.
 - **Start command:** `npm run dev`, then open `https://<LAN-IP>:5173` on each phone and accept the self-signed certificate.
 - **Demo walkthrough (not yet performed):** sender saves/broadcasts a water-point card; receiver listens and saves it; sender edits hours and rebroadcasts, updating the same visible card; sender marks it Closed; old replay does not reopen it; receiver reloads offline and searches water. See README for production-cache preparation. Forms remain accessible separately.
-- **Checks performed and results:** Previous forms baseline: 32 unit tests, production build and 25 smoke checks were recorded passing before this change; raw phone-to-phone chirps were confirmed. New information/PWA implementation: **tests, build and demos not run**, at participant request. Unit and smoke scenarios are provided; all new verification is TODO.
+- **Checks performed and results:** Previous forms baseline: 32 unit tests, production build and 25 smoke checks were recorded passing before this change; raw phone-to-phone chirps were confirmed. The participant subsequently reported the information flow works; exact device/range/offline checks were not specified. Codex has not run new tests, builds, previews or demos, at participant request. New automated scenarios and the latest light UI remain unverified.
 - **Known limitations or incomplete features:** About 10–28 bytes/s; short cards only, one sender at a time, foreground mic listening. New UI English; authored information is not translated. Broadcast source IDs are not authentication. iOS untested. First load needs connectivity and production caching needs trusted HTTPS. No deployment or phone-cache setup has been performed. Maps/calls have external requirements. Loudspeaker `.wav` export deferred.
 - **Libraries, APIs, and public datasets used:** [ggwave](https://github.com/ggerganov/ggwave) (MIT, Georgi Gerganov) as the sound modem; Vite, @vitejs/plugin-basic-ssl and Vitest (MIT). No datasets.
 - **AI usage record:** [AI_USAGE.md](AI_USAGE.md)
