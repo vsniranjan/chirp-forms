@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="342" viewBox="0 0 1080 342" role="img" aria-labelledby="title description">
+  <title id="title">Chirp: broadcast, save, update</title>
+  <desc id="description">A coordinator broadcasts a water-point card as sound. A nearby phone saves it. A later broadcast updates the same card to show that the water point is closed.</desc>
+  <rect width="1080" height="342" rx="24" fill="#f6f8f5"/>
+  <g font-family="Segoe UI,Arial,sans-serif">
+    <text x="38" y="42" fill="#61756d" font-size="13" font-weight="600" letter-spacing="2">FROM AN ANNOUNCEMENT TO SOMETHING YOU CAN KEEP</text>
+    <g transform="translate(38 69)">
+      <rect width="286" height="208" rx="18" fill="#ffffff" stroke="#dce5df"/>
+      <text x="22" y="32" fill="#167565" font-size="13" font-weight="600">01 / BROADCAST</text>
+      <text x="22" y="68" fill="#243b35" font-size="21" font-weight="600">Water point</text>
+      <text x="22" y="99" fill="#61756d" font-size="15">North gate · 4:30–5:00 PM</text>
+      <text x="22" y="125" fill="#61756d" font-size="15">Exact location + instructions</text>
+      <rect x="22" y="149" width="132" height="37" rx="10" fill="#167565"/>
+      <text x="88" y="173" fill="#ffffff" font-size="14" text-anchor="middle" font-weight="600">Broadcast</text>
+    </g>
+    <g fill="none" stroke="#167565" stroke-width="3" stroke-linecap="round">
+      <path d="M341 163v20m9-27v34m9-42v50m9-42v34m9-27v20"/>
+    </g>
+    <g transform="translate(396 69)">
+      <rect width="286" height="208" rx="18" fill="#ffffff" stroke="#dce5df"/>
+      <text x="22" y="32" fill="#167565" font-size="13" font-weight="600">02 / SAVE</text>
+      <text x="22" y="68" fill="#243b35" font-size="21" font-weight="600">Water point</text>
+      <text x="22" y="99" fill="#61756d" font-size="15">North gate · 4:30–5:00 PM</text>
+      <text x="22" y="125" fill="#61756d" font-size="15">Stored on this phone</text>
+      <rect x="22" y="149" width="161" height="37" rx="10" fill="#e8f4ee"/>
+      <text x="102" y="173" fill="#167565" font-size="14" text-anchor="middle" font-weight="600">Find it later: water</text>
+    </g>
+    <path d="M700 173h25m-7-7 7 7-7 7" fill="none" stroke="#167565" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(746 69)">
+      <rect width="296" height="208" rx="18" fill="#eaf4ed" stroke="#a5cdb8"/>
+      <text x="22" y="32" fill="#167565" font-size="13" font-weight="600">03 / UPDATE</text>
+      <text x="22" y="68" fill="#243b35" font-size="21" font-weight="600">Water point</text>
+      <rect x="22" y="88" width="77" height="28" rx="14" fill="#fff2dd"/>
+      <text x="60" y="107" fill="#926018" font-size="13" text-anchor="middle" font-weight="600">Closed</text>
+      <text x="22" y="145" fill="#61756d" font-size="15">Same card. New information.</text>
+      <text x="22" y="179" fill="#167565" font-size="14" font-weight="600">Updated just now</text>
+    </g>
+    <text x="540" y="316" fill="#61756d" font-size="14" text-anchor="middle">Sound carries the data. Each phone keeps its own searchable copy.</text>
+  </g>
+</svg>

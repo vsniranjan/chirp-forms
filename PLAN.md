@@ -107,7 +107,8 @@ Codec:
       notice; library browsing does not require mic access. Production preview uses port 5174.
 - [ ] **Information/offline verification.** Participant will run checks and the real-phone demo.
       `npm test`, `npm run build`, `npm run smoke` (dev), then production
-      `npm run smoke:offline -- https://localhost:5174`. None run by Codex, per participant request.
+      `npm run smoke:offline -- https://localhost:5174`. Tests/smoke remain unrun by Codex;
+      production build succeeded for hosted publication.
 
 Information transport: new `MsgType.INFO` = 7; complete snapshots, no ACKs; reuse chunking and
 broadcast repeats. Binary schema version 1 carries source ID, record ID, monotonic version,
@@ -119,8 +120,12 @@ the sender's next-ID counter to avoid reusing IDs remembered by other phones.
 
 No new dependencies. One coordinator, no authentication, chatbot, automatic expiry or full history.
 Source text is shown as authored; existing forms translations are retained. Phone offline caching
-requires trusted HTTPS; no hosting changes or phone setup have been made. Map actions still depend
+requires trusted HTTPS; public Sites deployment of application source `f1b34a1` succeeded, while
+phone offline setup/reload still awaits confirmation. Map actions still depend
 on Google Maps connectivity or previously downloaded coverage.
+
+Documentation handoff (2026-10-25): README now leads with the current card workflow; AGENTS.md
+is compact, with earlier sessions preserved in docs/PROJECT_HISTORY.md. No runtime code changed.
 
 - [x] **M0 — Spike.** Vite project, ggwave loaded, Send/Listen page. Phone-to-phone test with
       `AUDIBLE_FAST` and `AUDIBLE_FASTEST`. Record: real bytes/sec, whether raw bytes survive the

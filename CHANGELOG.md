@@ -6,6 +6,20 @@ Record each meaningful project change during the event, newest first. Update thi
 
 Entries before the template adoption were written retroactively from the git history. Their timestamps are the real commit times.
 
+## 2026-10-25T02:47:34+05:30 — Refresh README and compact agent guidance
+
+- Changed: inviting README with local workflow illustration, demo walkthrough, setup and current
+  evidence/limits; shorter AGENTS.md covering architecture and contribution essentials. Preserved
+  older decisions/session notes in docs/PROJECT_HISTORY.md; corrected stale PLAN/SUBMISSION build
+  and deployment statements and repaired walkthrough links.
+- Why: make the current product understandable to technical/nontechnical readers and repository
+  reviewers without burying it beneath the older forms workflow or extensive agent history.
+- Validation: documentation links/assets and consistency checked; Sites metadata confirmed the
+  existing public live URL/version. No application tests, builds or demos needed or run for this
+  documentation-only change. The deployed application remains source f1b34a1.
+- Limitations: documentation does not establish new phone/offline/security test results; recorded
+  pending checks and unsigned/public broadcast limitations remain explicit.
+
 ## 2026-10-25T02:36:59+05:30 — Prepare hosted offline demo and reliable readiness
 
 - Changed: Sites production-hosting manifest, development link to the hosted copy, and offline

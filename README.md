@@ -1,183 +1,158 @@
-# Chirp — useful information, saved and updated by sound
+<p align="center">
+  <img src="public/icon.svg" width="72" height="72" alt="Chirp logo">
+</p>
 
-Broadcast useful disaster information to nearby phones with **no network**. A coordinator creates
-cards for places, supplies, contacts and instructions. Listening phones save the cards locally;
-later broadcasts update the same cards. People can search the information afterward instead of
-remembering an announcement or copying down coordinates. Existing two-way forms remain available
-under **Forms and diagnostics**.
+<h1 align="center">Chirp</h1>
+<p align="center"><strong>Public announcements, saved on your phone.</strong></p>
+<p align="center">Send useful disaster information through sound. Keep it, find it, and receive updates—even without a network after initial setup.</p>
+<p align="center">
+  <a href="https://chirp-offline-relief.socialmacaw16.chatgpt.site/">Try the live demo</a> ·
+  <a href="#try-it-in-a-minute">Quick walkthrough</a> ·
+  <a href="#run-locally">Developer setup</a> ·
+  <a href="AGENTS.md">Agent guide</a>
+</p>
 
-**Current status:** on 2026-10-25, the participant manually confirmed broadcast reception, two
-different cards received correctly, and updating the first card after sending the second, with
-the correct data received on the client. Device models, range, offline reload and comprehensive
-visual review were not specified. Codex continues to leave test/build/demo runs to the participant.
+![Broadcast a card, save it locally, and update the same record](docs/assets/chirp-flow.svg)
 
-The interface now uses a light teal theme, local line icons and shorter copy. **New card** opens
-the editor; optional location/hours/phone fields expand when needed. Saving closes the editor so
-the card's **Broadcast** action is easy to reach. Receiver cards keep raw coordinates and source
-metadata under **More details**; search, status and useful actions stay visible. No external fonts,
-icon downloads or new dependencies are required.
+## Why Chirp?
 
-Built for the hackathon track **"Works Anyway"** (constraint: no connectivity). Target users:
-**disaster-relief crews** doing rapid needs assessments after floods or earthquakes.
+“Water is available at the north gate until five.” An announcement is useful—but someone might
+miss the time, forget the location, or never hear that the collection point has closed.
 
-**[Event rules](RULES.md)** · **[Agent instructions](AGENTS.md)** · **[Implementation plan](PLAN.md)** · **[Change log](CHANGELOG.md)** · **[AI usage](AI_USAGE.md)**
+Chirp sends the details directly to nearby listening phones as sound. They become searchable
+cards with exact coordinates, hours, contacts and instructions. A later broadcast updates the
+same card, so people can find the latest information **their phone has received**.
 
-**Phone demo:** [Open Chirp](https://chirp-offline-relief.socialmacaw16.chatgpt.site/).
-Load this address on each phone while online, wait for **Available offline**, then disable Wi-Fi
-and reload the same address. The initial download needs a connection; subsequent app loading,
-saved-card lookup and sound transfer are designed to work without the laptop or network.
-The local development screen includes an **Open offline demo** link to this production copy.
+Built by [Niranjan](https://github.com/vsniranjan) for **Devin Hack Kochi**, track **Works Anyway**.
+The constraint: **no network for transferring information**. The website must be loaded beforehand.
 
-## Event
+## What you can do
 
-**Devin Hack Kochi** — track: *Works Anyway*. The event has no major AI usage constraints; see [RULES.md](RULES.md).
+| Share | Keep on the receiving phone |
+| --- | --- |
+| **Places** | Shelter or meeting-point details, coordinates and an **Open in Maps** button |
+| **Supplies** | Distribution points, collection hours and short instructions |
+| **Contacts** | A saved phone number and a **Call** button |
+| **Instructions** | Short notes people can look up later |
 
-## Project overview
+Cards have **Active**, **Closed** or **Withdrawn** status. Receivers save them automatically,
+show visible updates, and support keyword search and category filters. Older or duplicate
+versions do not overwrite a newer version already saved on that phone.
 
-- **Project name:** Chirp Forms
-- **Short description:** Broadcasts structured disaster-information cards over sound. Phones keep a
-  searchable offline reference, and newer broadcasts update saved details without duplicates or
-  older messages undoing a closure. Reception range still needs measurement.
-- **Team:** Solo — Niranjan ([@vsniranjan](https://github.com/vsniranjan)).
-- **Repository:** https://github.com/vsniranjan/chirp-forms
-- **Working demo:** local demo, see [Run the project](#run-the-project) and [Demo walkthrough](#demo-walkthrough).
-- **Technology stack:** Vanilla JavaScript (ES modules), Vite, [ggwave](https://github.com/ggerganov/ggwave)
-  (WASM data-over-sound modem), Web Audio API, localStorage. No backend. Tests with Vitest.
+**Why sound?** One broadcast can reach multiple listening phones without camera aiming or
+Bluetooth pairing. QR codes also work offline and may be better in some settings. Chirp explores
+sound as another way to distribute small, actionable records.
 
-### Run the project
+## Try it in a minute
 
-1. **Prerequisites and versions:** Node.js 24 (tested with 24.16; Vite 8 needs >= 20.19), npm 11.
-   Android phones with Chrome on the same Wi-Fi as the dev machine. Google Chrome on the dev machine
-   for the smoke test only.
-2. **Dependency installation:**
-   ```bash
-   npm install
-   ```
-3. **Environment setup:** none. No API keys or environment variables are used.
-4. **Start the project:**
-   ```bash
-   npm run dev
-   ```
-   Open the printed `https://<LAN-IP>:5173` URL on each phone. The dev server uses a self-signed
-   certificate (the mic requires HTTPS), so tap *Advanced → Proceed* once per phone.
-5. **Run checks or tests:**
-   ```bash
-   npm test          # protocol, information-record and translation tests
-   npm run build     # production build
-   npm run smoke     # headless Chrome end-to-end (needs `npm run dev` running in another terminal)
-   ```
+Use two phones with Chrome. Start close together in a quiet space.
 
-### Information walkthrough
+1. Open **[Chirp](https://chirp-offline-relief.socialmacaw16.chatgpt.site/)** on both phones while online.
+2. Receiver: choose **Saved information → Start listening**, allow microphone access, and keep the screen open.
+3. Sender: choose **Broadcast information → Use water example → Save card → Broadcast**.
+4. Watch the card appear on the receiver. Edit its hours on the sender, **Save changes**, and broadcast again.
+5. The same receiver card updates. Try **Closed**, then stop listening and search **water**.
 
-1. Sender: choose **Broadcast information**, tap **Use water example**, edit the details and
-   coordinates, then **Save card**. The example coordinates are illustrative, not a verified aid site.
-2. Receiver: choose **Saved information** and tap **Start listening**. Leave this screen open.
-3. Sender: tap **Broadcast** on the saved card. It shows byte count and estimated airtime.
-   The receiver saves and displays the card, including **Open in Maps** when coordinates are present.
-4. Sender: tap **Edit**, change the hours, **Save changes**, then **Broadcast** again.
-   The receiver updates the existing card and highlights it with **Updated just now**.
-5. Repeat with status **Closed** or **Withdrawn**. Replaying an older version cannot reopen the card.
-6. Receiver: stop listening, search **water**, or filter by category. Saved information remains
-   readable without microphone permission. Card text stays in the language the coordinator entered.
+The example location is illustrative, not a verified aid site. Saving a card changes the sender's
+local copy; **Broadcast** sends it. “Broadcast finished” means playback completed, not that every
+nearby phone confirmed receipt.
 
-Changes save locally when **Save changes** is tapped; they reach receivers only after **Broadcast**.
-Each broadcast is one complete card, at most two chirps, with optional repeats in Settings. There
-are no receiver acknowledgements and the sender does not claim delivery to every phone.
+### Going offline
 
-### Offline loading
+Wait for **Available offline** on the hosted website before disconnecting. Then disable Wi-Fi
+and reload **that same address**. Initial loading needs connectivity; the production app caches
+its interface and modem for subsequent use. **Phone offline reload still awaits confirmation.**
+
+The local development address (`:5173`) is for development, not offline reload. It links to the
+hosted demo. Different addresses have separate browser storage; old local cards do not
+appear automatically at the hosted address.
+
+Maps and calls are optional external actions. The coordinates and text remain in Chirp;
+Google Maps needs connectivity or previously downloaded coverage, and offline walking directions
+are unavailable. Calls need phone service. [Google's offline-map guidance](https://support.google.com/maps/answer/6291838).
+
+## How it works
+
+```text
+Coordinator card → compact bytes → ggwave chirp → microphone → saved card
+        edit → broadcast a newer version → update the same saved record
+```
+
+- **Transport:** [ggwave](https://github.com/ggerganov/ggwave) handles the sound modem; our code handles framing, chunking and application records.
+- **Updates:** records have a source ID, permanent record ID and version. Receivers accept only newer complete snapshots; missing an earlier version does not block a later one.
+- **Storage:** cards stay in the browser's localStorage. No application backend, accounts, API keys, cloud AI or card uploads.
+- **Offline loading:** a build-generated service worker caches production assets. The ready message waits until it controls the page.
+- **Bandwidth:** measured modem throughput is about 10–28 bytes/s, depending on mode. Information cards are capped at 268 payload bytes, or two chirps; the sender estimates airtime.
+
+The original two-way **forms** workflow remains under **Forms and diagnostics**: form broadcast,
+worker entries, receipts/retries, deduplicated results and CSV export. Its worker UI supports
+English, Malayalam and Hindi. New information cards retain the coordinator's authored language.
+
+## Run locally
+
+Node.js **24** and npm **11** are the recorded development environment. No environment variables
+or credentials are needed.
 
 ```bash
-npm run build
-npm run preview       # production preview on port 5174; development stays on 5173
+npm ci
+npm run dev
+```
+
+Open the printed HTTPS URL on port **5173**. For phone development, use the same Wi-Fi as the
+laptop, accept the local certificate warning, and allow microphone access. For offline phone
+use, prefer the hosted demo's normal HTTPS address.
+
+```bash
+npm run build     # production assets, including the offline worker
+npm run preview   # production preview on port 5174
+npm test          # Vitest
+npm run smoke     # Chrome E2E; keep the dev server running separately
+```
+
+For the production offline smoke scenario, keep preview running and use:
+
+```bash
 npm run smoke:offline -- https://localhost:5174
 ```
 
-The production build generates a service worker that saves the app, styles and modem assets.
-Wait for **Available offline** before disconnecting. Development
-mode links to the hosted offline demo. Production and development use different ports to avoid stale cached
-development pages. Close all Chirp tabs and reopen when the app reports an update is saved.
+Smoke requires Google Chrome; set `CHROME` if its executable is not at the script's default
+Windows path. It feeds real chirp WAVs into a simulated microphone. This is distinct from
+real-phone acoustic testing. There is no lint command.
 
-On phones, offline installation requires a trusted HTTPS site; simply proceeding past the dev
-server's certificate warning may not allow a service worker. A static HTTPS host can serve `dist/`
-without any backend. Relative asset paths support hosting under a subdirectory. The Sites project
-is configured in `.openai/hosting.json`; its audience is public by the participant's request.
-Deployment is managed through Sites, while the team GitHub repository remains the source of record.
+## Status and limits
 
-The hosted website and the old laptop-IP address have separate browser storage. Old saved cards
-stay at the old address; rebroadcast them from the original sender to a receiver on the new address
-if needed. No card data is uploaded to the host. “Available offline” now waits until the service
-worker actually controls the page, not merely until it has activated.
-
-Map buttons open Google Maps with the transmitted coordinates. Offline map use requires coverage
-downloaded beforehand; Google Maps offline walking directions are unavailable. Calls require phone
-service. Both actions are optional: the coordinates, hours, number and instructions remain in Chirp.
-See [Google Maps URLs](https://developers.google.com/maps/documentation/urls/get-started) and
-[offline maps](https://support.google.com/maps/answer/6291838).
-
-### Existing forms walkthrough
-
-Open **Forms and diagnostics** on the home screen first.
-
-1. Phone A: open the app and tap **Supervisor**. The *Rapid Needs* preset form is loaded (13 bytes,
-   about 2.6 s of sound). Tap **Broadcast form**.
-2. Phone B: open the app and tap **Field worker**, then pick **മലയാളം**. It shows **ഫോം ലഭിച്ചു ✓**
-   (Form received) when it hears the chirp, with every label in Malayalam.
-3. Phone B: fill an entry, tap **Save entry**, then hold it near phone A and tap **Send**.
-4. Phone A: the entry appears in the results table **in English** and A chirps back a receipt.
-   Phone B shows **എത്തി** (Delivered).
-5. Tap **Download CSV** on phone A.
-6. Repeat with airplane mode on, once the page is already loaded.
-
-### Current status
-
-- **Information implementation; automated checks pending at the participant's request:** information sender/editor,
-  four categories, persistent receiver library, in-place versioned updates, search and filtering,
-  map/contact actions, byte/airtime display, and production offline caching. New unit and smoke
-  scenarios are provided but have not been executed. No new dependencies were added.
-- **Participant-confirmed manual checks (2026-10-25):** broadcast reception, two distinct cards,
-  and a correct update to the first card after the second was sent. This does not establish
-  automated test results, offline reload, replay protection, noisy-room range or signed verification.
-- Cards use one coordinator for the demo. A source ID identifies records; it is not authentication.
-  There is no automatic translation of authored information, expiry, chatbot or full history.
-
-- **Working features (verified by `npm test` and `npm run smoke`):**
-  - Form builder that shows the live byte count and airtime.
-  - One-to-many form broadcast.
-  - Worker side: receives the form, stores entries offline, and sends them back reliably (receipt
-    with resend of any missing parts).
-  - Supervisor side: merges entries with duplicates removed, and exports CSV.
-  - **Per-phone language.** Each worker picks English, Malayalam or Hindi and sees the form in that
-    language. Answers come back to the supervisor in English. This costs no extra airtime because
-    labels travel as 1-byte codes.
-  - Selectable sound modes and a raw link-test screen.
-- **Verified on real phones:** raw phone-to-phone chirp transfer on two Android phones (link-test
-  screen). The full supervisor ↔ worker flow has so far only been verified headlessly (real chirp
-  audio fed into Chrome's fake microphone). A real two-phone run is pending.
-- **Known limitations:**
-  - Bandwidth is about 10–28 bytes/s depending on sound mode, so it carries text and numbers only, not photos.
-  - Malayalam and Hindi translations are AI-written and pending native-speaker review. Custom labels
-    and free-text answers are not translated.
-  - Half-duplex, so one worker sends at a time.
-  - Untested on iOS Safari.
-  - First loading/caching needs connectivity. Production offline caching is implemented but untested.
-  - The audible band will not survive narrowband phone calls.
-- **Deferred:** loudspeaker mode/WAV export and additional demo polish. See [PLAN.md](PLAN.md).
-- **Libraries, APIs, and public datasets used:**
-  - [ggwave](https://github.com/ggerganov/ggwave) by Georgi Gerganov, MIT licence. It is the FSK modem
-    with Reed-Solomon error correction. Our code is the framing, chunking, ACK/retransmit protocol, the
-    compact form codec, and the app.
-  - [Vite](https://vite.dev) and [@vitejs/plugin-basic-ssl](https://github.com/vitejs/vite-plugin-basic-ssl), MIT.
-  - [Vitest](https://vitest.dev), MIT.
-  - No public datasets.
-
-### Repository layout
-
-| Path | Contents |
+| Evidence | Current status |
 | --- | --- |
-| `src/audio/` | Web Audio + ggwave send/listen wrapper |
-| `src/protocol/` | Frame format, codec, chunker, reliable link (pure, unit-tested) |
-| `src/ui/` | Supervisor, worker and link-test screens |
-| `scripts/` | Smoke test and throughput spikes |
-| `PLAN.md` | Design, protocol spec, measurements, milestones |
+| Broadcast, two different cards, update the first after the second | Participant reported correct client data on 2026-10-25 |
+| Production build and public hosting | Build succeeded; Sites deployment of `f1b34a1` returned `succeeded` |
+| Expanded information/PWA automated checks | Written, not run in the current session |
+| Earlier forms baseline | Historical record: 32 unit tests and 25 smoke checks passed; not a current-suite result |
+| Phone offline reload, old-version replay and noisy-room range | Not yet confirmed in the recorded results |
 
-See [AI_USAGE.md](AI_USAGE.md) for AI assistance and [CHANGELOG.md](CHANGELOG.md) for the development record.
+This is a hackathon prototype. Reception requires an open page, microphone permission and
+listening enabled. Range and noise tolerance depend on hardware and environment; large-room
+or large-device-count reliability is not established. Missed updates leave the last received
+information in place. Browser data can be lost if storage is cleared.
+
+**Security:** broadcasts are currently public and unsigned. Source IDs and CRC/version checks
+are not authentication. Coordinator verification is planned; encryption and private messaging
+are not implemented. iOS, automatic expiry, WAV export and native Android packaging are also
+outside the current verified demo.
+
+## Explore the code
+
+| Area | Entry point |
+| --- | --- |
+| Sender and saved-information screens | [src/ui/information.js](src/ui/information.js) |
+| Record encoding, versioned merge and search | [src/protocol/info.js](src/protocol/info.js) |
+| Frames, reassembly and broadcast/reliable link | [src/protocol/](src/protocol/) |
+| Sound modem wrapper | [src/audio/ggwave.js](src/audio/ggwave.js) |
+| Browser storage and offline loading | [src/store.js](src/store.js), [src/offline.js](src/offline.js) |
+| Production offline worker generation | [scripts/offline-plugin.js](scripts/offline-plugin.js) |
+
+Built with vanilla JavaScript, Vite, Web Audio, ggwave and Vitest. ggwave is the open-source
+modem by Georgi Gerganov, under the MIT licence; Chirp's contribution is the protocol and product
+around it. No public datasets are used. AI development assistance is recorded transparently below.
+
+[Agent guide](AGENTS.md) · [Plan](PLAN.md) · [Development history](CHANGELOG.md) ·
+[AI usage](AI_USAGE.md) · [Submission](SUBMISSION.md) · [Event guidance](RULES.md)
