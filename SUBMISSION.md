@@ -22,7 +22,7 @@ Participate solo or in a team of up to 4. Remove unused rows.
 ## Run and demonstrate
 
 - **Prerequisites and versions:** Node.js 24 (tested 24.16), npm 11, Android phones with Chrome.
-- **Install command:** `cd chirp-forms && npm install`
+- **Install command:** `npm install`
 - **Required environment variable names:** None.
 - **Start command:** `npm run dev`, then open `https://<LAN-IP>:5173` on each phone and accept the self-signed certificate.
 - **Demo walkthrough:** Supervisor phone broadcasts the *Rapid Needs* form → worker phone shows "Form received" → worker saves an entry and taps Send → the row appears on the supervisor and the worker shows "Delivered" → export CSV. Repeat in airplane mode.

@@ -91,26 +91,25 @@ modem; our work is the protocol (chunking, ACK/retry, compact codec) and the pro
 | `README.md` | Public project overview, run steps, status (template-required). Keep in sync with reality. |
 | `CHANGELOG.md` / `AI_USAGE.md` | Template-required dev record and AI usage log. Update with each meaningful commit. |
 | `SUBMISSION.md` / `RULES.md` | Template submission checklist / event rules (RULES.md is verbatim, don't edit). |
-| `chirp-forms/` | The app. Vite + vanilla JS + `ggwave` npm (WASM). No backend. |
-| `chirp-forms/src/audio/ggwave.js` | `createRadio()` — half-duplex send/listen wrapper around ggwave. |
-| `chirp-forms/src/protocol/frame.js` | 6 B frame header, CRC-8, `MsgType`. Pure. |
-| `chirp-forms/src/protocol/codec.js` | Form/entries <-> bytes (layouts documented at top of file). Pure. |
-| `chirp-forms/src/protocol/chunker.js` | `split`, `Reassembler`, ACK bitmaps. Pure. |
-| `chirp-forms/src/protocol/link.js` | `createLink(radio)`: `broadcast`, `sendReliable` (ACK/retransmit), `on(type, h, {ack})`. |
-| `chirp-forms/src/presets.js` | Shared label dictionary (**append only**) + Rapid Needs preset form. |
-| `chirp-forms/src/store.js` | localStorage: settings, deviceId, supervisor/worker state. |
-| `chirp-forms/src/i18n.js` | Worker-side translations (en/ml/hi) keyed by canonical dictionary label + UI strings. `tl()` labels, `tu()` UI. New dictionary labels MUST get translations (test enforces). |
-| `chirp-forms/src/main.js` | Router: `#/` home, `#/supervisor`, `#/worker`, `#/diag`; tap-to-start gate after reload. |
-| `chirp-forms/src/ui/*.js` | `components.js` (`h()` DOM helper, header/settings, toast), `supervisor.js`, `worker.js`, `diag.js` (raw link test). |
-| `chirp-forms/scripts/smoke.mjs` | Headless Chrome E2E over CDP; feeds real chirp WAVs into the fake mic. |
-| `chirp-forms/scripts/spike-*.cjs` | Node loopback throughput spikes. Rerun if protocol params change. |
+| repo root (`src/`, `scripts/`, `package.json`, `vite.config.js`) | The app. Vite + vanilla JS + `ggwave` npm (WASM). No backend. |
+| `src/audio/ggwave.js` | `createRadio()` — half-duplex send/listen wrapper around ggwave. |
+| `src/protocol/frame.js` | 6 B frame header, CRC-8, `MsgType`. Pure. |
+| `src/protocol/codec.js` | Form/entries <-> bytes (layouts documented at top of file). Pure. |
+| `src/protocol/chunker.js` | `split`, `Reassembler`, ACK bitmaps. Pure. |
+| `src/protocol/link.js` | `createLink(radio)`: `broadcast`, `sendReliable` (ACK/retransmit), `on(type, h, {ack})`. |
+| `src/presets.js` | Shared label dictionary (**append only**) + Rapid Needs preset form. |
+| `src/store.js` | localStorage: settings, deviceId, supervisor/worker state. |
+| `src/i18n.js` | Worker-side translations (en/ml/hi) keyed by canonical dictionary label + UI strings. `tl()` labels, `tu()` UI. New dictionary labels MUST get translations (test enforces). |
+| `src/main.js` | Router: `#/` home, `#/supervisor`, `#/worker`, `#/diag`; tap-to-start gate after reload. |
+| `src/ui/*.js` | `components.js` (`h()` DOM helper, header/settings, toast), `supervisor.js`, `worker.js`, `diag.js` (raw link test). |
+| `scripts/smoke.mjs` | Headless Chrome E2E over CDP; feeds real chirp WAVs into the fake mic. |
+| `scripts/spike-*.cjs` | Node loopback throughput spikes. Rerun if protocol params change. |
 
 Not yet built: `src/audio/speaker.js` (M4), PWA manifest/service worker (M5).
 
 ## Commands
 
 ```bash
-cd chirp-forms
 npm install                      # once
 npm run dev                      # HTTPS dev server on https://<LAN-IP>:5173 (self-signed cert; accept on phone)
 npm run build && npm run preview # production build check

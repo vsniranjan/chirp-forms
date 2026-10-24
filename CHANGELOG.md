@@ -6,6 +6,13 @@ Record each meaningful project change during the event, newest first. Update thi
 
 Entries before the template adoption were written retroactively from the git history. Their timestamps are the real commit times.
 
+## 2026-10-24T22:30:00+05:30 — Flatten repo: app moved to the root
+
+- Changed: Moved everything in `chirp-forms/` (`src/`, `scripts/`, `public/`, `index.html`, `package.json`, `package-lock.json`, `vite.config.js`) to the repository root with `git mv`. Updated paths and commands in `README.md`, `AGENTS.md`, `PLAN.md` and `SUBMISSION.md`. Older changelog entries keep their original `chirp-forms/` paths as history.
+- Why: Standard single-folder project layout. `npm` commands now run from the repo root.
+- Validation: `npm test` 32/32. `npm run build` OK. `npm run smoke` 25/25, run twice.
+- Limitations: None identified.
+
 ## 2026-10-24T22:20:00+05:30 — Correct event to Devin Hack Kochi
 
 - Changed: Applied the organizer's template correction (the template shared earlier was for an older event). `RULES.md` and the PR template were updated with the organizer's patch; `README.md`, `AGENTS.md`, `SUBMISSION.md` and `AI_USAGE.md` were edited to match.

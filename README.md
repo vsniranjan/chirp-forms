@@ -34,7 +34,6 @@ Built for the hackathon track **"Works Anyway"** (constraint: no connectivity). 
    for the smoke test only.
 2. **Dependency installation:**
    ```bash
-   cd chirp-forms
    npm install
    ```
 3. **Environment setup:** none. No API keys or environment variables are used.
@@ -100,10 +99,10 @@ Built for the hackathon track **"Works Anyway"** (constraint: no connectivity). 
 
 | Path | Contents |
 | --- | --- |
-| `chirp-forms/src/audio/` | Web Audio + ggwave send/listen wrapper |
-| `chirp-forms/src/protocol/` | Frame format, codec, chunker, reliable link (pure, unit-tested) |
-| `chirp-forms/src/ui/` | Supervisor, worker and link-test screens |
-| `chirp-forms/scripts/` | Smoke test and throughput spikes |
+| `src/audio/` | Web Audio + ggwave send/listen wrapper |
+| `src/protocol/` | Frame format, codec, chunker, reliable link (pure, unit-tested) |
+| `src/ui/` | Supervisor, worker and link-test screens |
+| `scripts/` | Smoke test and throughput spikes |
 | `PLAN.md` | Design, protocol spec, measurements, milestones |
 
 See [AI_USAGE.md](AI_USAGE.md) for AI assistance and [CHANGELOG.md](CHANGELOG.md) for the development record.

@@ -27,7 +27,7 @@ Budget targets: form broadcast <= 5 s; one entry <= 3 s. Preset form is 19 B on 
 ## Project structure
 
 ```
-chirp-forms/
+(repo root)/
   index.html              # single page, role chosen at runtime
   src/
     main.js               # routing: supervisor | worker
