@@ -97,6 +97,7 @@ modem; our work is the protocol (chunking, ACK/retry, compact codec) and the pro
 | `chirp-forms/src/protocol/link.js` | `createLink(radio)`: `broadcast`, `sendReliable` (ACK/retransmit), `on(type, h, {ack})`. |
 | `chirp-forms/src/presets.js` | Shared label dictionary (**append only**) + Rapid Needs preset form. |
 | `chirp-forms/src/store.js` | localStorage: settings, deviceId, supervisor/worker state. |
+| `chirp-forms/src/i18n.js` | Worker-side translations (en/ml/hi) keyed by canonical dictionary label + UI strings. `tl()` labels, `tu()` UI. New dictionary labels MUST get translations (test enforces). |
 | `chirp-forms/src/main.js` | Router: `#/` home, `#/supervisor`, `#/worker`, `#/diag`; tap-to-start gate after reload. |
 | `chirp-forms/src/ui/*.js` | `components.js` (`h()` DOM helper, header/settings, toast), `supervisor.js`, `worker.js`, `diag.js` (raw link test). |
 | `chirp-forms/scripts/smoke.mjs` | Headless Chrome E2E over CDP; feeds real chirp WAVs into the fake mic. |
@@ -186,6 +187,9 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
 | 2026-10-24 | 6 B frame header instead of planned 8 B | ggwave gives exact length; chunk idx/count fit in one byte |
 | 2026-10-24 | Default protocol AUDIBLE_NORMAL | Corrected airtimes make the most robust protocol cheap (~3 s/msg) |
 | 2026-10-24 | Only the `ack:true` subscriber ACKs | Prevents every nearby worker answering a worker's entries |
+| 2026-10-24 | No images / sketches for now | Human decision: focus on what can be demoed to judges. Prototype discarded uncommitted. |
+| 2026-10-24 | Per-phone language, answers stay English | Best answer to "why not just announce it on a loudspeaker?": voice can't collect data back or translate per listener |
+| 2026-10-24 | Pitch leads with collecting answers, not broadcast | A loudspeaker voice already does one-way broadcast; the return path is the unique value |
 
 ## Session log
 
@@ -232,3 +236,11 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
   Push after every commit: `git push`. Never force-push.
 - Next step: continue M4 (speaker mode). Screenshots for the repo deferred; add later under
   `docs/screenshots/`.
+
+### 2026-10-24 — session 2c (Devin)
+- Built per-phone language (en/ml/hi) for the worker; values stay canonical English. Smoke 25/25.
+- Discarded (uncommitted, never pushed) sketch/photo prototype at the human's request.
+- Waiting on human: (1) real two-phone run of the full flow; (2) a native check of the Malayalam
+  strings in `src/i18n.js`.
+- Next step, in the human's priority order: **M5 offline PWA** (reload works in airplane mode),
+  then **M4 loudspeaker + .wav**, then roll-call only if time allows. No image work.

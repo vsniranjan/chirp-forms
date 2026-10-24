@@ -13,6 +13,7 @@ The work so far used **Devin** (Cognition's coding agent, running Claude Opus), 
 | 2026-10-24T20:57:41+05:30 | Devin (Claude Opus) | Agent handoff memory | `AGENTS.md` | Requested by participant; content review pending. | Docs-only |
 | 2026-10-24T21:27:12+05:30 | Devin (Claude Opus) | M1 protocol: frame, codec, chunker, reliable link | `src/protocol/*.js` and tests, `src/presets.js` | Code review pending. | Vitest 29/29 passing, including real ggwave loopback. |
 | 2026-10-24T21:33:39+05:30 | Devin (Claude Opus) | M2/M3 supervisor and worker UI, smoke test | `src/ui/*.js`, `src/store.js`, `src/main.js`, `src/style.css`, `scripts/smoke.mjs` | Code review and real two-phone run pending. | Build OK; `npm run smoke` 20/20 in headless Chrome. |
+| 2026-10-24T22:15+05:30 | Devin (Claude Opus) | Per-phone language (English / Malayalam / Hindi) | `src/i18n.js`, `src/i18n.test.js`, `src/ui/worker.js`, `src/ui/supervisor.js`, `src/style.css`, `scripts/smoke.mjs`. Translations written by the agent. | Participant chose the feature. **Malayalam/Hindi wording not yet reviewed by a native speaker.** Agent also discarded its own uncommitted image prototype at the participant's request. | Vitest 32/32; smoke 25/25 incl. Malayalam entry stored as English. |
 | 2026-10-24T21:59+05:30 | Devin (Claude Opus) | Adopt event repository template | `README.md`, `CHANGELOG.md`, `AI_USAGE.md`, `SUBMISSION.md`, `AGENTS.md`, `RULES.md`, `.github/`, `.gitignore` | Requested by participant; review pending. | Docs-only; links checked. |
 
 ## Template preparation

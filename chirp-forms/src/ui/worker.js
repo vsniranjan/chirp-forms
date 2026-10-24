@@ -1,10 +1,19 @@
 import { createLink } from '../protocol/link.js';
 import { MsgType, MAX_CHUNKS, MAX_PAYLOAD } from '../protocol/frame.js';
 import { decodeForm, encodeEntries, MAX_TEXT } from '../protocol/codec.js';
-import { deviceId, workerStore } from '../store.js';
-import { activityLog, describeEvent, deviceName, formatValue, h, header, sendOptions, toast } from './components.js';
+import { deviceId, settings, workerStore } from '../store.js';
+import { currentLang, LANGUAGES, tl, tu } from '../i18n.js';
+import { activityLog, describeEvent, deviceName, h, header, sendOptions, toast } from './components.js';
 
 const MAX_MESSAGE = MAX_PAYLOAD * MAX_CHUNKS;
+
+// Values are stored canonical (true/false, English option labels); only the display is translated.
+function showValue(field, v) {
+  if (v === null || v === undefined) return '—';
+  if (field.type === 'yesno') return v ? tu('yes') : tu('no');
+  if (field.type === 'choice') return tl(v);
+  return String(v);
+}
 
 export function mountWorker(app, radio) {
   const state = workerStore.load();
@@ -18,8 +27,8 @@ export function mountWorker(app, radio) {
     onEvent: (e) => {
       const d = describeEvent(e);
       if (d) log.add(...d);
-      if (e.type === MsgType.ENTRIES && e.kind === 'tx') status.textContent = `Chirping part ${e.chunkIdx + 1} of ${e.count}…`;
-      if (e.kind === 'retry') status.textContent = e.bitmap === null ? 'No receipt yet — chirping again…' : `Supervisor missed ${e.todo.length} part(s) — resending…`;
+      if (e.type === MsgType.ENTRIES && e.kind === 'tx') status.textContent = tu('chirpingPart', e.chunkIdx + 1, e.count);
+      if (e.kind === 'retry') status.textContent = e.bitmap === null ? tu('retryNoAck') : tu('retryMissing', e.todo.length);
     },
   });
 
@@ -34,7 +43,7 @@ export function mountWorker(app, radio) {
     state.forms[form.id] = form;
     state.currentId = form.id;
     persist();
-    toast('Form received', `${form.title} · ${form.fields.length} fields`);
+    toast(tu('formReceived'), `${tl(form.title)} · ${tu('fields', form.fields.length)}`);
     render();
   });
 
@@ -43,9 +52,17 @@ export function mountWorker(app, radio) {
   const current = () => state.forms[state.currentId] ?? null;
   const entriesFor = (form) => state.entries.filter((e) => e.formId === form.id);
 
+  function languagePicker() {
+    const lang = currentLang();
+    return h('div', { class: 'segmented lang', role: 'group', 'aria-label': tu('language') },
+      Object.entries(LANGUAGES).map(([code, name]) =>
+        h('button', { class: `seg${code === lang ? ' on' : ''}`, type: 'button', lang: code, onclick: () => (settings.set({ lang: code }), mount()) }, name)
+      ));
+  }
+
   function control(field) {
     if (field.type === 'yesno' || field.type === 'choice') {
-      const options = field.type === 'yesno' ? [['Yes', true], ['No', false]] : field.options.map((o) => [o, o]);
+      const options = field.type === 'yesno' ? [[tu('yes'), true], [tu('no'), false]] : field.options.map((o) => [tl(o), o]);
       let value = null;
       const buttons = options.map(([label, v]) =>
         h('button', {
@@ -61,7 +78,7 @@ export function mountWorker(app, radio) {
     }
     const input = h('input', field.type === 'number'
       ? { type: 'number', inputMode: 'numeric', step: 1 }
-      : { type: 'text', maxLength: MAX_TEXT / 3, placeholder: 'Short text' });
+      : { type: 'text', maxLength: MAX_TEXT / 3, placeholder: tu('shortText') });
     return {
       el: input,
       get: () => {
@@ -77,20 +94,20 @@ export function mountWorker(app, radio) {
     return h(
       'section',
       { class: 'panel' },
-      h('h2', {}, form.title),
-      ...form.fields.map((f, i) => h('div', { class: 'field' }, h('label', {}, f.label), controls[i].el)),
+      h('h2', {}, tl(form.title)),
+      ...form.fields.map((f, i) => h('div', { class: 'field' }, h('label', {}, tl(f.label)), controls[i].el)),
       h('button', {
         class: 'big',
         onclick: () => {
           const values = controls.map((c) => c.get());
-          if (values.every((v) => v === null)) return toast('Nothing filled in', '', 1200);
+          if (values.every((v) => v === null)) return toast(tu('nothingFilled'), '', 1200);
           state.entries.push({ formId: form.id, seq: state.nextSeq, values, sent: false, at: Date.now() });
           state.nextSeq = (state.nextSeq % 255) + 1;
           persist();
           render();
           window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
         },
-      }, 'Save entry')
+      }, tu('saveEntry'))
     );
   }
 
@@ -98,19 +115,19 @@ export function mountWorker(app, radio) {
     const entries = entriesFor(form);
     const unsent = entries.filter((e) => !e.sent);
     const sendBtn = h('button', { class: 'big', disabled: !unsent.length, onclick: () => send(form, unsent, sendBtn) },
-      unsent.length ? `Send ${unsent.length} entr${unsent.length === 1 ? 'y' : 'ies'} to supervisor` : 'All entries sent');
+      unsent.length ? tu('send', unsent.length) : tu('allSent'));
     return h(
       'section',
       { class: 'panel' },
-      h('h2', {}, `Saved entries (${entries.length})`),
+      h('h2', {}, tu('savedEntries', entries.length)),
       entries.length
         ? h('ul', { class: 'entries' }, entries.slice().reverse().map((e) =>
             h('li', {},
-              h('span', { class: e.sent ? 'ok' : 'warn' }, e.sent ? '✓ sent' : '● not sent'),
-              h('span', { class: 'stat' }, form.fields.map((f, i) => `${f.label}: ${formatValue(e.values[i])}`).join(' · '))
+              h('span', { class: e.sent ? 'ok' : 'warn' }, e.sent ? tu('sent') : tu('notSent')),
+              h('span', { class: 'stat' }, form.fields.map((f, i) => `${tl(f.label)}: ${showValue(f, e.values[i])}`).join(' · '))
             )))
-        : h('div', { class: 'stat' }, 'Saved entries stay on this phone until the supervisor confirms them.'),
-      h('div', { class: 'stat' }, 'Hold the phone near the supervisor\'s phone, then tap send.'),
+        : h('div', { class: 'stat' }, tu('savedHint')),
+      h('div', { class: 'stat' }, tu('holdNear')),
       sendBtn,
       status
     );
@@ -126,22 +143,22 @@ export function mountWorker(app, radio) {
     btn.disabled = true;
     btn.classList.add('pulse');
     status.className = 'send-status stat';
-    status.textContent = 'Chirping…';
+    status.textContent = tu('chirping');
     try {
       const res = await link.sendReliable(MsgType.ENTRIES, bytes);
       if (res.ok) {
         batch.forEach((e) => (e.sent = true));
         persist();
-        toast('Delivered', `${batch.length} entr${batch.length === 1 ? 'y' : 'ies'} confirmed by supervisor`);
+        toast(tu('delivered'), tu('deliveredSub', batch.length));
         render();
-        if (batch.length < unsent.length) status.textContent = 'More entries left — tap send again.';
+        if (batch.length < unsent.length) status.textContent = tu('moreLeft');
       } else {
         status.className = 'send-status bad';
-        status.textContent = 'Not confirmed. Move closer to the supervisor and try again.';
+        status.textContent = tu('notConfirmed');
       }
     } catch (err) {
       status.className = 'send-status bad';
-      status.textContent = `Send failed: ${err.message}`;
+      status.textContent = tu('sendFailed', err.message);
     } finally {
       btn.classList.remove('pulse');
       btn.disabled = false;
@@ -156,14 +173,19 @@ export function mountWorker(app, radio) {
         : [
             h('section', { class: 'panel hero' },
               h('div', { class: 'ring pulse' }),
-              h('div', { class: 'hero-title' }, 'Listening for a form…'),
-              h('div', { class: 'stat' }, 'Keep this screen open. When the supervisor broadcasts, the form appears here — no internet needed.')),
+              h('div', { class: 'hero-title' }, tu('listening')),
+              h('div', { class: 'stat' }, tu('listeningHint'))),
           ]),
-      h('section', { class: 'panel' }, h('h2', {}, h('span', { class: 'dot pulse' }), ` Listening · ${deviceName(me)}`), log.el)
+      h('section', { class: 'panel' }, h('h2', {}, h('span', { class: 'dot pulse' }), ` ${tu('listeningAs', deviceName(me))}`), log.el)
     );
   }
 
-  app.replaceChildren(header('Field worker'), body);
-  render();
+  function mount() {
+    document.documentElement.lang = currentLang();
+    app.replaceChildren(header(tu('role')), languagePicker(), body);
+    render();
+  }
+
+  mount();
   return link.start();
 }

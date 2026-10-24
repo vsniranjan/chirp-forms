@@ -163,7 +163,7 @@ export function mountSupervisor(app, radio) {
             },
           }, 'Edit as new form')
         : null,
-      h('div', { class: 'stat' }, 'Orange labels are not in the shared dictionary and cost extra airtime.')
+      h('div', { class: 'stat' }, 'Suggested labels travel as 1-byte codes and appear in each worker\'s own language (English, Malayalam, Hindi); answers come back in English. Orange labels are custom: sent as typed, not translated, and cost extra airtime.')
     );
     broadcastBtn.textContent = d.locked ? 'Broadcast again' : 'Broadcast form';
     updateCost();

@@ -286,6 +286,11 @@ button.seg {
   padding: 12px;
 }
 
+.segmented.lang button.seg {
+  padding: 8px;
+  font-size: 0.95rem;
+}
+
 button.seg.on {
   background: var(--accent);
   color: #06281b;

@@ -6,6 +6,14 @@ Record each meaningful project change during the event, newest first. Update thi
 
 Entries before the template adoption were written retroactively from the git history. Their timestamps are the real commit times.
 
+## 2026-10-24T22:15:00+05:30 — Each worker sees the form in their own language
+
+- Changed: New `src/i18n.js` with English, Malayalam and Hindi for every dictionary label and every worker UI string. `src/ui/worker.js` has a language picker and translated labels, options, yes/no and status text. The supervisor builder hint explains the behaviour. Tests are in `src/i18n.test.js`, and `scripts/smoke.mjs` has new checks.
+- Why: Answers the question "why not just announce it on a loudspeaker?". Labels travel as 1-byte codes, so each phone renders them in its own language at zero extra airtime, while answers are stored and sent back as canonical English, so the supervisor's CSV stays uniform.
+- Validation: `npm test` 32/32. `npm run build` OK. `npm run smoke` 25/25, including: a worker switched to Malayalam sees Malayalam labels, saves an entry by tapping a Malayalam option, and the stored value is the English `Medical`. The preset form is still 13 bytes.
+- Limitations: Translations were written by the AI agent and need native-speaker review. Custom (non-dictionary) labels and free-text answers are not translated. The supervisor screen is English only.
+- Also: Discarded uncommitted sketch/photo prototype code. The participant chose to focus on demo-critical features.
+
 ## 2026-10-24T22:10:00+05:30 — Connect GitHub repository
 
 - Changed: Added `origin` (github.com/vsniranjan/chirp-forms, created from the event template) and merged its initial commit, keeping the filled-in versions of the template files. Team (solo, @vsniranjan) and repo URL are now in `README.md` and `SUBMISSION.md`.

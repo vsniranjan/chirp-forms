@@ -141,6 +141,16 @@ try {
   await b.click('button', 'Save entry');
   check('entry saved locally', await b.waitFor(text('Saved entries (1)')));
   check('send button armed', await b.waitFor(text('Send 1 entry to supervisor')));
+
+  check('switch worker to Malayalam', await b.click('button.seg', 'മലയാളം'));
+  check('form labels shown in Malayalam', await b.waitFor(text('അടിയന്തര ആവശ്യ സർവേ') + ' && ' + text('ആളുകൾ') + ' && ' + text('സേവ് ചെയ്യുക')));
+  check('earlier entry summary translated', await b.waitFor(text('വെള്ളം: അതെ')));
+  await b.evaluate(`(() => { document.querySelectorAll('.field input[type=number]')[1].value = '3';
+    [...document.querySelectorAll('button.seg')].find((x) => x.textContent === 'വൈദ്യസഹായം').click(); })()`);
+  await b.click('button', 'സേവ് ചെയ്യുക');
+  check('Malayalam send button', await b.waitFor(text('2 എണ്ണം സൂപ്പർവൈസർക്ക് അയയ്ക്കുക')));
+  const stored = await b.evaluate(`JSON.parse(localStorage.getItem('chirp:worker')).entries.at(-1).values`);
+  check('answer stored as canonical English', stored?.[1] === 3 && stored?.[4] === 'Medical', JSON.stringify(stored));
   check('no runtime errors (worker)', b.errors.length === 0, b.errors.join(' | '));
   b.close();
 

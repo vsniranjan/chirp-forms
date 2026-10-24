@@ -60,23 +60,33 @@ Built for the hackathon track **"Works Anyway"** (constraint: no connectivity). 
 
 1. Phone A: open the app and tap **Supervisor**. The *Rapid Needs* preset form is loaded (13 bytes,
    about 2.6 s of sound). Tap **Broadcast form**.
-2. Phone B: open the app and tap **Field worker**. It shows **Form received ✓** when it hears the chirp.
+2. Phone B: open the app and tap **Field worker**, then pick **മലയാളം**. It shows **ഫോം ലഭിച്ചു ✓**
+   (Form received) when it hears the chirp, with every label in Malayalam.
 3. Phone B: fill an entry, tap **Save entry**, then hold it near phone A and tap **Send**.
-4. Phone A: the entry appears in the results table and A chirps back a receipt. Phone B shows **Delivered**.
+4. Phone A: the entry appears in the results table **in English** and A chirps back a receipt.
+   Phone B shows **എത്തി** (Delivered).
 5. Tap **Download CSV** on phone A.
 6. Repeat with airplane mode on, once the page is already loaded.
 
 ### Current status
 
-- **Working features (verified by `npm test` and `npm run smoke`):** form builder with live
-  byte/airtime cost; one-to-many form broadcast; worker form reception, offline entry storage and
-  reliable send-back with ACK and selective retransmit; supervisor merge with dedup and CSV export;
-  selectable sound modes; raw link-test screen.
+- **Working features (verified by `npm test` and `npm run smoke`):**
+  - Form builder that shows the live byte count and airtime.
+  - One-to-many form broadcast.
+  - Worker side: receives the form, stores entries offline, and sends them back reliably (receipt
+    with resend of any missing parts).
+  - Supervisor side: merges entries with duplicates removed, and exports CSV.
+  - **Per-phone language.** Each worker picks English, Malayalam or Hindi and sees the form in that
+    language. Answers come back to the supervisor in English. This costs no extra airtime because
+    labels travel as 1-byte codes.
+  - Selectable sound modes and a raw link-test screen.
 - **Verified on real phones:** raw phone-to-phone chirp transfer on two Android phones (link-test
   screen). The full supervisor ↔ worker flow has so far only been verified headlessly (real chirp
   audio fed into Chrome's fake microphone). A real two-phone run is pending.
 - **Known limitations:**
   - Bandwidth is about 10–28 bytes/s depending on sound mode, so it carries text and numbers only, not photos.
+  - Malayalam and Hindi translations are AI-written and pending native-speaker review. Custom labels
+    and free-text answers are not translated.
   - Half-duplex, so one worker sends at a time.
   - Untested on iOS Safari.
   - Opening the page still needs the network once; offline PWA caching is planned (M5).
