@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "smoke": "node scripts/smoke.mjs"
   },
   "devDependencies": {
     "@vitejs/plugin-basic-ssl": "^2.3.0",
