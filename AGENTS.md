@@ -4,6 +4,69 @@ Read this first. It is the shared memory for every agent (Devin, Codex, Cursor, 
 this repo. Work may be handed off mid-task when a session hits usage limits, so keep this file and
 `PLAN.md` accurate enough that a fresh agent with zero context can continue in under 5 minutes.
 
+Part 1 is the hackathon template's agent guide (event workflow rules, kept as provided). Part 2 is
+this project's memory: what we're building, hard facts, conventions, handoff log.
+
+---
+
+# Part 1 — Hackathon agent guide (from the event template)
+
+## Event requirements
+
+- Read [RULES.md](RULES.md) before working. Build project implementation from scratch at the event; do not import a pre-built project.
+- Libraries, APIs, and public datasets are allowed. Document their sources and use.
+- Use Codex during development and briefly record its actual contribution in [AI_USAGE.md](AI_USAGE.md).
+- Prepare a code repository, short project description, and working demo in [SUBMISSION.md](SUBMISSION.md).
+
+## Use basic coding patterns
+
+- Prefer straightforward, idiomatic code: small functions, clear names, simple data structures, and modules with one clear responsibility.
+- Use the project's existing patterns. Add an abstraction only when an actual repeated need makes the code easier to understand.
+- Choose the simplest implementation that meets the current requirement. Avoid unnecessary layers, generic frameworks, premature optimization, and speculative features.
+- Keep dependencies few and purposeful. Reuse appropriate standard libraries and established libraries instead of reimplementing them.
+- Validate inputs, handle errors explicitly, and show useful failure messages. Do not hide failures behind fabricated success or demo data.
+- Keep changes focused. Explain the reason for non-obvious decisions in short comments or project documentation.
+
+## Document every meaningful change
+
+- Update [CHANGELOG.md](CHANGELOG.md) in the same commit as each meaningful change. Record the date and time with timezone, what changed, why, the affected files or feature, validation performed, and known limitations.
+- Update [README.md](README.md) whenever setup, commands, environment requirements, project behavior, or demo instructions change.
+- Update [AI_USAGE.md](AI_USAGE.md) whenever Codex makes a meaningful contribution. Record the task, assistance, human review status, checks, and any corrections. Brief summaries are enough; full chat transcripts are unnecessary.
+- Keep claims accurate. Distinguish implemented and verified behavior from planned or incomplete work. Never invent test results, deployment success, AI usage, or commit timestamps.
+
+## Make regular, timely commits
+
+1. Inspect `git status` before editing. Preserve teammates' work and identify files belonging to the current task.
+2. Finish a small, coherent change, run appropriate checks, and update its documentation.
+3. Review the diff and explicitly stage only the files for that change.
+4. **Commit after each completed milestone. While actively building, aim for a commit about every 30 minutes when meaningful changes are ready.** Do not leave the entire night's work for one final commit.
+5. Commit completed work before a handoff, a long break, or the end of a work session. If work is incomplete, document its state and use an honest `wip:` message for a useful checkpoint.
+6. Use short, descriptive messages, such as `feat: add project search`, `fix: handle empty results`, or `docs: explain local demo setup`.
+7. Do not create empty commits to satisfy the clock. Do not backdate commits, squash away the event development record, force-push, or rewrite shared history.
+8. Push committed checkpoints to the team's repository regularly, when network access is available and the team has authorized that remote. Resolve conflicts with care.
+
+The 30-minute target is this repository's working convention. It does not replace event rules or organizer instructions.
+
+## Check work and protect credentials
+
+- Use the project's actual install, run, lint, test, and build commands. Add them to the README as soon as they exist; this template does not prescribe a stack.
+- Run checks appropriate to the change. For a documentation-only change, check links and consistency. For code changes, verify the changed behavior and any relevant existing tests.
+- Report what ran and what passed, failed, or could not be checked. If a command fails, investigate or document the limitation before handoff.
+- Keep credentials, API keys, approved QR codes, and private participant data out of commits and logs. Use environment variables and sanitized examples; never put live keys in `.env.example`.
+
+## Before submission
+
+- Complete [SUBMISSION.md](SUBMISSION.md), replacing all participant placeholders.
+- Confirm the README gives reproducible setup and demo steps.
+- Check that the working demo matches the submitted code and that known limitations are disclosed.
+- Update the changelog and AI usage record, commit the final coherent change, and push it.
+- Record the final submitted commit SHA in the submission details. Documentation may record that SHA in a subsequent commit; do not claim later implementation changes belong to the earlier demo.
+- Follow the organizers' actual submission method and timing. The event wraps up by 10:00 AM IST on 11 October 2026.
+
+---
+
+# Part 2 — Project memory: Chirp Forms
+
 ## What we are building (one paragraph)
 
 **Chirp Forms** — a static PWA that sends small forms between phones using *sound* (ggwave FSK
@@ -23,6 +86,9 @@ modem; our work is the protocol (chunking, ACK/retry, compact codec) and the pro
 |---|---|
 | `AGENTS.md` | This file. How to work, current status, handoff log. |
 | `PLAN.md` | What to build: constraints, protocol spec, milestones (checkboxes), measurements, demo script, risks. |
+| `README.md` | Public project overview, run steps, status (template-required). Keep in sync with reality. |
+| `CHANGELOG.md` / `AI_USAGE.md` | Template-required dev record and AI usage log. Update with each meaningful commit. |
+| `SUBMISSION.md` / `RULES.md` | Template submission checklist / event rules (RULES.md is verbatim, don't edit). |
 | `chirp-forms/` | The app. Vite + vanilla JS + `ggwave` npm (WASM). No backend. |
 | `chirp-forms/src/audio/ggwave.js` | `createRadio()` — half-duplex send/listen wrapper around ggwave. |
 | `chirp-forms/src/protocol/frame.js` | 6 B frame header, CRC-8, `MsgType`. Pure. |
@@ -84,8 +150,12 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
 - Build UI with `h()` from `src/ui/components.js`, never `innerHTML` with dynamic data — form
   labels and text arrive over the air from untrusted devices.
 - Verification before every commit: `npm test`, `npm run build`, and `npm run smoke` for UI changes.
-- Commit after each milestone or meaningful sub-step. Message style: imperative subject, body
-  explains why. Do not push unless asked.
+- Commit after each milestone or meaningful sub-step (see Part 1 cadence). Message style from now
+  on: `feat:` / `fix:` / `docs:` / `test:` / `wip:` prefix + short subject; body explains why.
+  Earlier commits used plain imperative subjects — do not rewrite them.
+- Every meaningful commit also updates `CHANGELOG.md` (real timestamp, +05:30) and, when an AI
+  agent did the work, `AI_USAGE.md`. Agents in use so far: Devin; Codex may join later.
+- Push to `origin` after each commit once the remote is set up and the human has authorized it.
 - UI must be thumb-friendly and readable from a projector: big buttons, dark theme, high contrast.
   Show the OFFLINE badge prominently — the constraint is the demo.
 - Default protocol is `AUDIBLE_NORMAL` (most noise-robust, still ~3 s per message);
@@ -152,3 +222,15 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
   WAV (reuse the WAV writer in `scripts/smoke.mjs`), "Download chirp .wav" button in supervisor,
   and a "loud" preset (volume 100, repeat x2). Then M5: PWA manifest + service worker so the app
   loads with no network, big OFFLINE badge, demo reset.
+
+### 2026-10-24 — session 2b (Devin)
+- Adopted the organizers' template (github.com/anima-regem/devday-kochi-hackathon-template):
+  added RULES.md (verbatim), PR template, README/CHANGELOG/AI_USAGE/SUBMISSION filled with real
+  data, merged template agent guide into this file as Part 1. Screenshots deferred by the human.
+- Waiting on human: create the GitHub repo via **Use this template → Create a new repository**
+  (no `gh` CLI here), then share the URL; team names/handles for README + SUBMISSION.
+- Next step once URL is known: `git remote add origin <url>`, `git fetch origin`,
+  `git merge origin/main --allow-unrelated-histories` (resolve conflicts keeping OUR versions of
+  README/AGENTS/CHANGELOG/AI_USAGE/SUBMISSION/.gitignore — they already contain the template text),
+  run `npm test`, then `git push -u origin main`. Never force-push.
+- Then continue M4.
