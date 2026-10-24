@@ -1,5 +1,8 @@
 # Chirp Forms — Implementation Plan
 
+> Agents: read `AGENTS.md` first (how to work, hard facts, handoff protocol, session log).
+> This file is *what* to build. Tick milestone checkboxes as you go.
+
 Forms that travel by sound. Offline field data collection for disaster-relief crews:
 one chirp broadcasts a form to every phone in earshot, workers fill it offline, entries
 chirp back to the supervisor who merges them and exports CSV. No internet, no Bluetooth
