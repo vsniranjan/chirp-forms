@@ -10,7 +10,8 @@ One-way information broadcasting is the current demo; existing forms remain seco
 **Verification override:** the participant asked Codex not to run checks or a demo for this change.
 New tests and smoke scenarios are written but unrun; build/offline/phone verification is pending.
 
-**Latest:** participant reports the information flow works (specific checks not recorded). Light
+**Latest (2026-10-25):** participant manually confirmed broadcast reception, two distinct cards,
+and updating the first after sending the second, with correct data received on the client. Light
 UI polish is implemented: teal/white theme, local icons, shorter copy, collapsible optional fields
 and metadata, and clearer listening/search. Runtime/visual verification remains with the participant.
 
@@ -88,6 +89,10 @@ Codec:
 - Device ID 2 B + entry seq 1 B for dedup on merge.
 
 ## Milestones
+
+- [x] **Manual information checks (participant, 2026-10-25).** Broadcast, two distinct cards and
+      an update to the first after the second were received with correct data. Device/range and
+      offline/replay results were not reported; automated tests remain unrun by Codex.
 
 - [x] **Information flow — implementation.** New primary sender and receiver routes; four card
       categories, optional coordinates/phone/hours, statuses, persistent versioned updates,

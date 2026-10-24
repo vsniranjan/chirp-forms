@@ -6,6 +6,15 @@ Record each meaningful project change during the event, newest first. Update thi
 
 Entries before the template adoption were written retroactively from the git history. Their timestamps are the real commit times.
 
+## 2026-10-25T02:25:13+05:30 — Record participant's information-flow checks
+
+- Changed: README, PLAN, AGENTS, SUBMISSION and AI_USAGE status records.
+- Why: record the participant's actual manual results: successful broadcast reception, two distinct
+  cards, and updating the first card after sending the second, with correct data received by the client.
+- Validation: these cases were reported passing by the participant. No agent-run tests, builds or demos.
+- Limitations: device/range, offline reload, closure/replay cases, signature verification and
+  automated test outcomes were not established by this report. No code changed.
+
 ## 2026-10-24T23:46:07+05:30 — Light theme and simpler information screens
 
 - Changed: replaced the dark UI with warm white panels, teal accents, readable status colours,

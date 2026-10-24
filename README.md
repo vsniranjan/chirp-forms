@@ -6,9 +6,10 @@ later broadcasts update the same cards. People can search the information afterw
 remembering an announcement or copying down coordinates. Existing two-way forms remain available
 under **Forms and diagnostics**.
 
-**Current status:** the participant reports that the information flow works. Specific device,
-range and offline-reload results have not been recorded. The latest UI polish is implemented but
-has not been runtime-verified; Codex continues to leave test/build/demo runs to the participant.
+**Current status:** on 2026-10-25, the participant manually confirmed broadcast reception, two
+different cards received correctly, and updating the first card after sending the second, with
+the correct data received on the client. Device models, range, offline reload and comprehensive
+visual review were not specified. Codex continues to leave test/build/demo runs to the participant.
 
 The interface now uses a light teal theme, local line icons and shorter copy. **New card** opens
 the editor; optional location/hours/phone fields expand when needed. Saving closes the editor so
@@ -117,10 +118,13 @@ Open **Forms and diagnostics** on the home screen first.
 
 ### Current status
 
-- **New implementation, checks pending at the participant's request:** information sender/editor,
+- **Information implementation; automated checks pending at the participant's request:** information sender/editor,
   four categories, persistent receiver library, in-place versioned updates, search and filtering,
   map/contact actions, byte/airtime display, and production offline caching. New unit and smoke
   scenarios are provided but have not been executed. No new dependencies were added.
+- **Participant-confirmed manual checks (2026-10-25):** broadcast reception, two distinct cards,
+  and a correct update to the first card after the second was sent. This does not establish
+  automated test results, offline reload, replay protection, noisy-room range or signed verification.
 - Cards use one coordinator for the demo. A source ID identifies records; it is not authentication.
   There is no automatic translation of authored information, expiry, chatbot or full history.
 

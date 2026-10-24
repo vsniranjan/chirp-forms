@@ -75,7 +75,9 @@ The 30-minute target is this repository's working convention. It does not replac
 receivers save them locally, search later, and apply newer revisions to the same cards. Categories:
 places, supplies, contacts, instructions. Existing forms below remain secondary, accessible from
 the home screen. The participant later confirmed the information flow works (device/range/offline
-details unspecified). They asked Codex to leave checks/demo runs to them; automated scenarios and
+details unspecified). On 2026-10-25 they specifically confirmed broadcast reception, two distinct
+cards and updating the first after sending the second, all with correct client data. They asked
+Codex to leave checks/demo runs to them; automated scenarios and
 the latest light UI polish remain unrun/unverified.
 
 **Chirp Forms** — a static PWA that sends small forms between phones using *sound* (ggwave FSK
@@ -285,3 +287,11 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
   secondary. No tests/build/browser previews/demo runs, respecting the human's standing preference.
 - Next: human reviews the new UI on phones; continue from their feedback. Note that saving now
   closes the editor; Edit/New card reopens it. New icons live in `src/ui/icons.js`.
+
+### 2026-10-25 — manual verification report (recorded by Codex)
+- Human confirmed broadcast reception, sending two different cards, then updating the first card
+  after sending the second. Correct data was received on the client in all reported cases.
+- Updated status docs only; no implementation changes or agent-run checks. Device models,
+  distance, airplane mode/offline reload, closure/replay tests and detailed UI review were not reported.
+- Remaining: coordinator signatures/trust setup are discussed only, not implemented. Offline/replay
+  and automated checks still need their own evidence; don't expand this manual report into those claims.
