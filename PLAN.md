@@ -14,15 +14,15 @@ Hackathon track: **Works Anyway** (constraint: no network). Demo with every phon
 
 | Constraint | Consequence |
 |---|---|
-| 8–16 bytes/sec | Compact binary encoding, label dictionaries, no JSON on the wire |
-| 140 B max per transmission | Frame = 8 B header + <=128 B payload; larger messages are chunked |
-| ~0.5–1 s marker overhead per transmission | Fewer, fuller chunks beat many small ones |
+| ~10–28 B/s effective (see M0 measurements) | Compact binary encoding, label dictionaries, no JSON on the wire |
+| 140 B max per transmission | Frame = 6 B header + <=134 B payload; larger messages are chunked (max 16) |
+| ~1 s fixed overhead per transmission | Fewer, fuller chunks beat many small ones |
 | Audible band 1875–6375 Hz | Survives speakers/PA; will NOT survive narrowband phone calls (don't promise it) |
 | Rx must pause during Tx | Half-duplex; a phone can't hear itself |
-| JS binding `encode()` takes a string | M0 must check whether raw bytes survive; fallback base64 (+33%) |
+| JS binding `encode()` takes a string | Verified binary-safe with `Uint8Array`; no base64 |
 
-Budget targets: form broadcast <= 10 s (<= ~128 B, one chunk). One filled entry <= 4 s (<= ~40 B).
-Demo returns 1–2 entries, not 10.
+Budget targets: form broadcast <= 5 s; one entry <= 3 s. Preset form is 19 B on the wire
+(2.6 s on NORMAL), a typical entry 25 B (1.5 s FASTEST / ~3 s NORMAL).
 
 ## Project structure
 
@@ -52,16 +52,21 @@ Stack: Vanilla JS + Vite, `ggwave` npm (WASM), Vitest for unit tests. Zero backe
 
 ## Wire protocol (ours, on top of ggwave)
 
-Frame (8 B header):
+Frame (6 B header) — implemented in `src/protocol/frame.js`:
 ```
-magic(1) | type(1) | msgId(2) | chunkIdx(1) | chunkCount(1) | len(1) | crc8(1) | payload(<=128)
+magic(0xC7) | type(1) | msgId(2, BE) | chunk(1: idx<<4 | count-1) | crc8(1) | payload(<=134)
 ```
+No length byte: ggwave delivers the exact transmitted length. CRC-8 (poly 0x07) over the frame
+with the crc byte skipped. Codec byte layouts are documented at the top of `src/protocol/codec.js`.
 
 Message types: `FORM` (schema broadcast), `ENTRIES` (worker -> supervisor), `ACK` (bitmap of
 received chunks), `PING`/`PONG` (link test), `ALERT` (stretch).
 
 Reliability: sender transmits all chunks; receiver replies `ACK` bitmap; sender retransmits only
-missing chunks, up to 3 rounds. `FORM` broadcasts are fire-and-forget with optional "repeat x2"
+missing chunks, up to 4 rounds total; if no ACK is heard, resend only the LAST chunk (the
+receiver ACKs on last chunk, so this elicits its bitmap cheaply). Only the device that registered
+`on(type, h, { ack: true })` ACKs (supervisor for ENTRIES), so bystander workers stay silent.
+Implemented in `src/protocol/link.js`. `FORM` broadcasts are fire-and-forget with optional "repeat x2"
 (20 receivers can't all ACK).
 
 Codec:
@@ -76,8 +81,9 @@ Codec:
 - [x] **M0 — Spike.** Vite project, ggwave loaded, Send/Listen page. Phone-to-phone test with
       `AUDIBLE_FAST` and `AUDIBLE_FASTEST`. Record: real bytes/sec, whether raw bytes survive the
       string API, max working distance. *These numbers set every cap above.*
-- [ ] **M1 — Protocol core.** `frame.js`, `chunker.js`, `codec.js` + Vitest round-trip tests.
-      Over audio: send 300 B, cover mic for one chunk, watch ACK + retransmit recover it.
+- [x] **M1 — Protocol core.** `frame.js`, `chunker.js`, `codec.js`, `link.js` + Vitest
+      (29 tests: round-trips, corruption, truncation, simulated lossy air, real ggwave modem
+      loopback). Over-air retransmit check happens naturally in M3 (cover the mic mid-send).
 - [ ] **M2 — Supervisor flow.** Builder (field types, preset), Broadcast with chirp animation,
       results table, CSV download.
 - [ ] **M3 — Worker flow.** Auto-listen on open, full-screen "Form received" toast, entry form,
@@ -91,38 +97,42 @@ Codec:
 ## M0 measurements
 
 Loopback in Node (`scripts/spike-loopback.cjs`, `scripts/spike-chunked.cjs`), 48 kHz, volume 10.
-Effective rate = payload bytes / total airtime (includes ECC + start/end markers). This is the
-number that matters, and it is roughly HALF the "8-16 B/s" headline.
+Effective rate = payload bytes / total airtime (includes ECC + start/end markers).
+
+> **Correction (session 2):** the first version of these numbers was 4x too slow. `encode()`
+> returns F32 samples viewed as an Int8Array of raw bytes, and the spike divided byte count by
+> the sample rate. Fixed (`/ 4`). The browser `createRadio().airtime()` was always correct
+> because it converts to Float32Array first.
 
 | Protocol | 16 B | 64 B | 128 B | 140 B (max) | Effective at 128 B |
 |---|---|---|---|---|---|
-| AUDIBLE_NORMAL | 9.6 s | 26.5 s | 49.6 s | 54.2 s | 2.6 B/s |
-| AUDIBLE_FAST | 7.3 s | 18.6 s | 34.0 s | 37.0 s | 3.8 B/s |
-| AUDIBLE_FASTEST | 5.0 s | 10.7 s | 18.4 s | 19.9 s | 7.0 B/s |
-| DT_FASTEST | 9.1 s | 26.0 s | 49.1 s | 53.7 s | 2.6 B/s |
+| AUDIBLE_NORMAL | 2.4 s | 6.6 s | 12.4 s | 13.6 s | 10.3 B/s |
+| AUDIBLE_FAST | 1.8 s | 4.7 s | 8.5 s | 9.3 s | 15.1 B/s |
+| AUDIBLE_FASTEST | 1.3 s | 2.7 s | 4.6 s | 5.0 s | 27.9 B/s |
+| DT_FASTEST | 2.3 s | 6.5 s | 12.3 s | 13.4 s | 10.4 B/s |
 
 Findings:
 - Raw binary (0x00..0xFF) passes through `encode`/`decode` untouched — embind accepts
   `Uint8Array` for `std::string`. **No base64 needed.**
 - Feeding the decoder in 1024-sample chunks (browser mic pattern) decodes correctly.
-- Reusing one instance across many messages/protocols left stale state once -> use one instance
-  per role and treat any decode mismatch as "retry", never trust partial output.
-- Fixed ~4 s overhead per transmission (markers + ECC floor), so **one fuller chunk beats two
-  small ones**.
+- Reusing one instance for encode then decode has produced a corrupt 128 B NORMAL decode in the
+  spike (reproducible at that position in the run; fresh instances always pass). Our CRC-8 rejects
+  such frames and the link retransmits, so this is handled, but never trust unframed output.
+- ~1 s fixed overhead per transmission, so one fuller chunk still beats two small ones.
 
-Revised budgets (AUDIBLE_FASTEST is the demo default; FAST is the noisy-room fallback):
-- Form broadcast target <= 10 s  ->  <= ~55 B total  ->  dictionary labels mandatory (1 B/field),
-  literal labels <= 6 chars each. 5-field preset form ~ 15 B -> ~5 s.
-- One entry chirp-back target <= 6 s  ->  <= ~25 B  ->  8 B header + 3 B ids + ~12 B values. OK.
-- Max useful chunk = 128 B payload = 18 s on FASTEST. Anything >1 chunk is a "long send" in the UI.
+Budgets: preset 6-field form = 13 B payload / 19 B frame -> 1.3 s FASTEST, 2.6 s NORMAL.
+Typical entry = 25 B frame -> 1.5 s FASTEST, ~3 s NORMAL. Because messages are this small,
+**AUDIBLE_NORMAL (most noise-robust) is affordable as the demo default.**
 
 Phone-to-phone over air: **confirmed working** (2026-10-24, user's two Android phones, link-test
 page, byte-exact RX OK). Per-distance / noisy-room numbers still to be filled in:
 
 | Protocol | Success 5/5 at 0.5 m | at 2 m | at 5 m (speaker) | Notes |
 |---|---|---|---|---|
+| AUDIBLE_NORMAL | | | | |
 | AUDIBLE_FAST | | | | |
 | AUDIBLE_FASTEST | | | | |
+| (any) with loud crowd noise from a laptop at 1 m | | | | |
 
 Phones: main phone = ______ , spare phone = ______
 

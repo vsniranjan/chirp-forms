@@ -27,7 +27,8 @@ factory().then((ggwave) => {
         console.log(`${name} len=${len}: encode failed: ${e.message}`);
         continue;
       }
-      const secs = waveform.length / sr;
+      // encode() returns F32 samples viewed as raw bytes: 4 bytes per sample
+      const secs = waveform.length / 4 / sr;
       const decoded = ggwave.decode(instance, waveform);
       const ok = decoded.length === len && payload.every((b, i) => b === (decoded[i] & 0xff));
       console.log(

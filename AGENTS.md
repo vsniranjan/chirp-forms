@@ -49,18 +49,21 @@ Windows dev machine; shell is Git Bash. Node 24, npm 11.
 ## Hard facts (measured, do not re-derive)
 
 - ggwave JS `encode`/`decode` are **binary-safe** with `Uint8Array` (embind std::string). No base64.
-- Max payload per transmission: **140 bytes**. Our frames use <=128 B payload + 8 B header.
-- Effective throughput incl. ECC + markers (the only number that matters):
-  `AUDIBLE_FASTEST` ~7 B/s (128 B = 18 s), `AUDIBLE_FAST` ~3.8 B/s (128 B = 34 s). ~4 s fixed cost
-  per transmission, so one fuller chunk beats two small ones.
+- Max payload per transmission: **140 bytes**. Our frames: 6 B header + <=134 B payload, <=16 chunks.
+- Effective throughput incl. ECC + markers (the only number that matters), 128 B message:
+  `AUDIBLE_NORMAL` 12.4 s (~10 B/s), `AUDIBLE_FAST` 8.5 s (~15 B/s), `AUDIBLE_FASTEST` 4.6 s
+  (~28 B/s). ~1 s fixed cost per transmission. (Session 1 recorded 4x slower numbers — that was a
+  bug: `encode()` returns F32 samples as raw bytes, divide length by 4.)
+- Preset form = 19 B frame (2.6 s NORMAL); typical entry = 25 B frame (~3 s NORMAL).
+- Noise robustness: NORMAL > FAST > FASTEST (longer tones). Ultrasound is weak on phone hardware.
 - Decoder output is a view into a static buffer — **copy it immediately** (`Uint8Array.from`).
 - Encoder output likewise — `createRadio().encode` already copies.
 - A phone must not decode while it transmits (half-duplex). `createRadio` mutes Rx during Tx.
 - Mic constraints: `echoCancellation:false, autoGainControl:false, noiseSuppression:false`.
 - Audible band is 1875–6375 Hz: survives speakers/PA; will NOT survive narrowband phone calls.
 
-Budgets derived from these: form broadcast <= ~55 B (<= 10 s); one entry <= ~25 B (<= 6 s).
-Dictionary label codes (1 B/field) are mandatory. Literal labels <= 6 chars.
+Budgets: form broadcast <= 5 s, one entry <= 3 s. Use dictionary labels (`src/presets.js`,
+APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airtime.
 
 ## Conventions
 
@@ -74,8 +77,8 @@ Dictionary label codes (1 B/field) are mandatory. Literal labels <= 6 chars.
   explains why. Do not push unless asked.
 - UI must be thumb-friendly and readable from a projector: big buttons, dark theme, high contrast.
   Show the OFFLINE badge prominently — the constraint is the demo.
-- Default protocol for the demo is `AUDIBLE_FASTEST`; `AUDIBLE_FAST` is the noisy-room fallback.
-  Keep the protocol selectable in a settings corner.
+- Default protocol is `AUDIBLE_NORMAL` (most noise-robust, still ~3 s per message);
+  FAST/FASTEST selectable in a settings corner for quiet rooms.
 
 ## Handoff protocol (every agent, every session)
 
@@ -98,7 +101,10 @@ Dictionary label codes (1 B/field) are mandatory. Literal labels <= 6 chars.
 | 2026-10-24 | Vanilla JS + Vite, no backend | Minimal surface; "static page" reinforces offline story |
 | 2026-10-24 | First wow feature: loudspeaker broadcast | Lowest effort, biggest reaction; it is just audio out |
 | 2026-10-24 | Binary frames, no base64 | Measured binary-safe; bytes are precious at 7 B/s |
-| 2026-10-24 | Demo returns 1–2 entries, not 10 | 10 entries would take minutes at measured rates |
+| 2026-10-24 | Demo returns 1–2 entries, not 10 | Keeps the live demo snappy; multi-entry still works (chunked) |
+| 2026-10-24 | 6 B frame header instead of planned 8 B | ggwave gives exact length; chunk idx/count fit in one byte |
+| 2026-10-24 | Default protocol AUDIBLE_NORMAL | Corrected airtimes make the most robust protocol cheap (~3 s/msg) |
+| 2026-10-24 | Only the `ack:true` subscriber ACKs | Prevents every nearby worker answering a worker's entries |
 
 ## Session log
 
