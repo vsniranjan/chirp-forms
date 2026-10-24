@@ -84,10 +84,11 @@ Codec:
 - [x] **M1 — Protocol core.** `frame.js`, `chunker.js`, `codec.js`, `link.js` + Vitest
       (29 tests: round-trips, corruption, truncation, simulated lossy air, real ggwave modem
       loopback). Over-air retransmit check happens naturally in M3 (cover the mic mid-send).
-- [ ] **M2 — Supervisor flow.** Builder (field types, preset), Broadcast with chirp animation,
-      results table, CSV download.
-- [ ] **M3 — Worker flow.** Auto-listen on open, full-screen "Form received" toast, entry form,
-      saved entries, "Send to supervisor" with progress + ACK status.
+- [x] **M2 — Supervisor flow.** Builder (field types, preset), Broadcast with chirp animation,
+      results table, CSV download. (`src/ui/supervisor.js`)
+- [x] **M3 — Worker flow.** Auto-listen on open, full-screen "Form received" toast, entry form,
+      saved entries, "Send to supervisor" with progress + ACK status. (`src/ui/worker.js`)
+      Verified headless end-to-end (`npm run smoke`); **still needs a real two-phone run**.
 - [ ] **M4 — Speaker mode.** "Via speaker" (max gain, repeat x2) + "Download chirp .wav" for
       laptop/PA/Bluetooth speaker. Test in the largest room available; record distance.
 - [ ] **M5 — Demo hardening.** OFFLINE badge (`navigator.onLine`), projector-friendly dark theme,

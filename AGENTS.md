@@ -24,12 +24,19 @@ modem; our work is the protocol (chunking, ACK/retry, compact codec) and the pro
 | `AGENTS.md` | This file. How to work, current status, handoff log. |
 | `PLAN.md` | What to build: constraints, protocol spec, milestones (checkboxes), measurements, demo script, risks. |
 | `chirp-forms/` | The app. Vite + vanilla JS + `ggwave` npm (WASM). No backend. |
-| `chirp-forms/src/audio/ggwave.js` | `createRadio()` — half-duplex send/listen wrapper around ggwave. Done. |
-| `chirp-forms/src/main.js` | Currently the M0 link-test page. Will become role router (supervisor/worker) in M2/M3. |
-| `chirp-forms/scripts/spike-*.cjs` | Node loopback spikes used to measure throughput. Keep; rerun if protocol params change. |
+| `chirp-forms/src/audio/ggwave.js` | `createRadio()` — half-duplex send/listen wrapper around ggwave. |
+| `chirp-forms/src/protocol/frame.js` | 6 B frame header, CRC-8, `MsgType`. Pure. |
+| `chirp-forms/src/protocol/codec.js` | Form/entries <-> bytes (layouts documented at top of file). Pure. |
+| `chirp-forms/src/protocol/chunker.js` | `split`, `Reassembler`, ACK bitmaps. Pure. |
+| `chirp-forms/src/protocol/link.js` | `createLink(radio)`: `broadcast`, `sendReliable` (ACK/retransmit), `on(type, h, {ack})`. |
+| `chirp-forms/src/presets.js` | Shared label dictionary (**append only**) + Rapid Needs preset form. |
+| `chirp-forms/src/store.js` | localStorage: settings, deviceId, supervisor/worker state. |
+| `chirp-forms/src/main.js` | Router: `#/` home, `#/supervisor`, `#/worker`, `#/diag`; tap-to-start gate after reload. |
+| `chirp-forms/src/ui/*.js` | `components.js` (`h()` DOM helper, header/settings, toast), `supervisor.js`, `worker.js`, `diag.js` (raw link test). |
+| `chirp-forms/scripts/smoke.mjs` | Headless Chrome E2E over CDP; feeds real chirp WAVs into the fake mic. |
+| `chirp-forms/scripts/spike-*.cjs` | Node loopback throughput spikes. Rerun if protocol params change. |
 
-Planned layout (see PLAN.md "Project structure"): `src/protocol/{frame,chunker,codec}.js`,
-`src/ui/{supervisor,worker,components}.js`, `src/store.js`, `src/presets.js`, `src/audio/speaker.js`.
+Not yet built: `src/audio/speaker.js` (M4), PWA manifest/service worker (M5).
 
 ## Commands
 
@@ -40,7 +47,8 @@ npm run dev                      # HTTPS dev server on https://<LAN-IP>:5173 (se
 npm run build && npm run preview # production build check
 node scripts/spike-loopback.cjs  # airtime / effective B/s per protocol (no audio hardware needed)
 node scripts/spike-chunked.cjs   # browser-like 1024-sample chunked decode check
-npm test                         # Vitest (added in M1; unit tests live next to source as *.test.js)
+npm test                         # Vitest: 29 tests incl. lossy-air link sim + real ggwave modem loopback
+npm run smoke                    # headless Chrome E2E (needs `npm run dev` running; uses installed Chrome)
 ```
 
 Phones must be on the same Wi-Fi as the dev machine. Mic requires HTTPS (hence basic-ssl plugin).
@@ -73,6 +81,9 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
 - Do not add dependencies without a reason written in PLAN.md. Current deps: `ggwave`, dev:
   `vite`, `@vitejs/plugin-basic-ssl`, (M1+) `vitest`.
 - Do not add comments explaining *what*; only *why* when non-obvious.
+- Build UI with `h()` from `src/ui/components.js`, never `innerHTML` with dynamic data — form
+  labels and text arrive over the air from untrusted devices.
+- Verification before every commit: `npm test`, `npm run build`, and `npm run smoke` for UI changes.
 - Commit after each milestone or meaningful sub-step. Message style: imperative subject, body
   explains why. Do not push unless asked.
 - UI must be thumb-friendly and readable from a projector: big buttons, dark theme, high contrast.
@@ -123,3 +134,21 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
   with retransmit" test into the link page.
 - Open question: if FASTEST fails often at 2 m on the real phones, switch default to FAST and
   shrink the preset form to <= 6 fields with dictionary-only labels.
+
+### 2026-10-24 — session 2 (Devin)
+- User confirmed phone-to-phone chirp works on the link-test page (M0 done).
+- Found and fixed a 4x airtime error in the M0 spike (F32 samples counted as bytes). Corrected
+  numbers in Hard facts / PLAN. Default protocol switched to AUDIBLE_NORMAL.
+- M1 done: frame (6 B header), codec (preset form = 13 B), chunker, link (ACK/retransmit, only
+  `ack:true` subscriber replies). 29 Vitest tests.
+- M2 + M3 done: supervisor builder/broadcast/results/CSV, worker receive/fill/save/send, diag
+  screen, router with tap-to-start gate, wake lock. `npm run smoke` passes 20/20 checks including
+  real chirps decoded through Chrome's fake mic in both directions.
+- Half-done: nothing uncommitted.
+- Waiting on human: **real two-phone run of the full flow** — phone A `#/supervisor` -> Broadcast;
+  phone B `#/worker` receives -> save entry -> Send; confirm row appears on A and B shows
+  "Delivered". Also try covering B's mic mid-send to see a retry. Report any failures.
+- Next step: **M4 speaker mode** — `src/audio/speaker.js`: render the FORM chirp to a downloadable
+  WAV (reuse the WAV writer in `scripts/smoke.mjs`), "Download chirp .wav" button in supervisor,
+  and a "loud" preset (volume 100, repeat x2). Then M5: PWA manifest + service worker so the app
+  loads with no network, big OFFLINE badge, demo reset.
