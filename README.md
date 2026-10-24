@@ -154,5 +154,5 @@ Built with vanilla JavaScript, Vite, Web Audio, ggwave and Vitest. ggwave is the
 modem by Georgi Gerganov, under the MIT licence; Chirp's contribution is the protocol and product
 around it. No public datasets are used. AI development assistance is recorded transparently below.
 
-[Agent guide](AGENTS.md) · [Plan](PLAN.md) · [Development history](CHANGELOG.md) ·
+[Judge FAQ](FAQ.md) · [Agent guide](AGENTS.md) · [Plan](PLAN.md) · [Development history](CHANGELOG.md) ·
 [AI usage](AI_USAGE.md) · [Submission](SUBMISSION.md) · [Event guidance](RULES.md)

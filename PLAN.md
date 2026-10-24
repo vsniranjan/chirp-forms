@@ -7,6 +7,10 @@
 instructions), receivers save and search them locally, and newer broadcasts update existing cards.
 One-way information broadcasting is the current demo; existing forms remain secondary.
 
+**Judge preparation (2026-10-25):** [FAQ.md](FAQ.md) contains 24 short answers covering the product,
+technical choices, security limitations and demo evidence. Documentation consistency/links checked;
+no application checks run. Next step remains phone offline reload and remaining update/replay checks.
+
 **Verification override:** the participant asked Codex not to run checks or a demo for this change.
 New tests and smoke scenarios are written but unrun; build/offline/phone verification is pending.
 

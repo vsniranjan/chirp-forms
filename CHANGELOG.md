@@ -6,6 +6,13 @@ Record each meaningful project change during the event, newest first. Update thi
 
 Entries before the template adoption were written retroactively from the git history. Their timestamps are the real commit times.
 
+## 2026-10-25T03:05:32+05:30 — Add judge FAQ
+
+- Changed: FAQ.md with short answers to 24 common product, technical, security and demo questions; linked from README.md.
+- Why: give the participant a simple reference for judge conversations.
+- Validation: checked local document links, factual consistency with the current README/agent guide, and diff whitespace. No application tests or demos run.
+- Limitations: no new feature or verification claims; security and remaining phone checks are described honestly.
+
 ## 2026-10-25T02:47:34+05:30 — Refresh README and compact agent guidance
 
 - Changed: inviting README with local workflow illustration, demo walkthrough, setup and current
