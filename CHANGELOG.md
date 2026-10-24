@@ -6,6 +6,13 @@ Record each meaningful project change during the event, newest first. Update thi
 
 Entries before the template adoption were written retroactively from the git history. Their timestamps are the real commit times.
 
+## 2026-10-24T22:20:00+05:30 — Correct event to Devin Hack Kochi
+
+- Changed: Applied the organizer's template correction (the template shared earlier was for an older event). `RULES.md` and the PR template were updated with the organizer's patch; `README.md`, `AGENTS.md`, `SUBMISSION.md` and `AI_USAGE.md` were edited to match.
+- Why: The old template named DevDay Exchange and required Codex. Devin Hack Kochi has no major AI usage constraints.
+- Validation: Docs-only. The organizer's patch applied cleanly to the unchanged files.
+- Limitations: None identified.
+
 ## 2026-10-24T22:15:00+05:30 — Each worker sees the form in their own language
 
 - Changed: New `src/i18n.js` with English, Malayalam and Hindi for every dictionary label and every worker UI string. `src/ui/worker.js` has a language picker and translated labels, options, yes/no and status text. The supervisor builder hint explains the behaviour. Tests are in `src/i18n.test.js`, and `scripts/smoke.mjs` has new checks.

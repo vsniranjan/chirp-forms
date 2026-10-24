@@ -10,14 +10,9 @@ Built for the hackathon track **"Works Anyway"** (constraint: no connectivity). 
 
 **[Event rules](RULES.md)** · **[Agent instructions](AGENTS.md)** · **[Implementation plan](PLAN.md)** · **[Change log](CHANGELOG.md)** · **[AI usage](AI_USAGE.md)**
 
-## Event details (from the template)
+## Event
 
-| Detail | Information |
-| --- | --- |
-| Event | DevDay Exchange Community Hackathon: Kochi ([Luma](https://luma.com/z10nz8gp)) |
-| Venue | JAIN University, Kochi — rooms 2008 and 2009 |
-| Participation | Solo or a team of up to 4 participants |
-| Theme | Open |
+**Devin Hack Kochi** — track: *Works Anyway*. The event has no major AI usage constraints; see [RULES.md](RULES.md).
 
 ## Project overview
 

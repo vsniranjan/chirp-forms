@@ -4,8 +4,10 @@ Read this first. It is the shared memory for every agent (Devin, Codex, Cursor, 
 this repo. Work may be handed off mid-task when a session hits usage limits, so keep this file and
 `PLAN.md` accurate enough that a fresh agent with zero context can continue in under 5 minutes.
 
-Part 1 is the hackathon template's agent guide (event workflow rules, kept as provided). Part 2 is
-this project's memory: what we're building, hard facts, conventions, handoff log.
+Part 1 is the hackathon template's agent guide (event workflow rules, kept as provided, including
+the organizer's 2026-10-24 correction to **Devin Hack Kochi**: no major AI usage constraints,
+Devin is allowed). Part 2 is this project's memory: what we're building, hard facts, conventions,
+handoff log.
 
 ---
 
@@ -13,9 +15,9 @@ this project's memory: what we're building, hard facts, conventions, handoff log
 
 ## Event requirements
 
-- Read [RULES.md](RULES.md) before working. Build project implementation from scratch at the event; do not import a pre-built project.
+- Read [RULES.md](RULES.md) before working. Follow the Devin Hack Kochi organizers' current project-start and eligibility instructions.
 - Libraries, APIs, and public datasets are allowed. Document their sources and use.
-- Use Codex during development and briefly record its actual contribution in [AI_USAGE.md](AI_USAGE.md).
+- Devin Hack Kochi has no major AI usage constraints. Choose suitable AI tools and providers; Codex is not required. If maintaining [AI_USAGE.md](AI_USAGE.md), record actual assistance accurately.
 - Prepare a code repository, short project description, and working demo in [SUBMISSION.md](SUBMISSION.md).
 
 ## Use basic coding patterns
@@ -31,7 +33,7 @@ this project's memory: what we're building, hard facts, conventions, handoff log
 
 - Update [CHANGELOG.md](CHANGELOG.md) in the same commit as each meaningful change. Record the date and time with timezone, what changed, why, the affected files or feature, validation performed, and known limitations.
 - Update [README.md](README.md) whenever setup, commands, environment requirements, project behavior, or demo instructions change.
-- Update [AI_USAGE.md](AI_USAGE.md) whenever Codex makes a meaningful contribution. Record the task, assistance, human review status, checks, and any corrections. Brief summaries are enough; full chat transcripts are unnecessary.
+- If maintaining [AI_USAGE.md](AI_USAGE.md), update it whenever an AI tool makes a meaningful contribution. Record the task, assistance, human review status, checks, and any corrections. Brief summaries are enough; full chat transcripts are unnecessary.
 - Keep claims accurate. Distinguish implemented and verified behavior from planned or incomplete work. Never invent test results, deployment success, AI usage, or commit timestamps.
 
 ## Make regular, timely commits
@@ -59,9 +61,9 @@ The 30-minute target is this repository's working convention. It does not replac
 - Complete [SUBMISSION.md](SUBMISSION.md), replacing all participant placeholders.
 - Confirm the README gives reproducible setup and demo steps.
 - Check that the working demo matches the submitted code and that known limitations are disclosed.
-- Update the changelog and AI usage record, commit the final coherent change, and push it.
+- Update the changelog and any maintained AI usage record, commit the final coherent change, and push it.
 - Record the final submitted commit SHA in the submission details. Documentation may record that SHA in a subsequent commit; do not claim later implementation changes belong to the earlier demo.
-- Follow the organizers' actual submission method and timing. The event wraps up by 10:00 AM IST on 11 October 2026.
+- Follow the organizers' actual submission method and timing. Use the Devin Hack Kochi organizers' current deadline.
 
 ---
 
@@ -155,7 +157,8 @@ APPEND ONLY) — 1 B per field; literal labels allowed up to 24 B but cost airti
   on: `feat:` / `fix:` / `docs:` / `test:` / `wip:` prefix + short subject; body explains why.
   Earlier commits used plain imperative subjects — do not rewrite them.
 - Every meaningful commit also updates `CHANGELOG.md` (real timestamp, +05:30) and, when an AI
-  agent did the work, `AI_USAGE.md`. Agents in use so far: Devin; Codex may join later.
+  agent did the work, `AI_USAGE.md` (optional per the event, but this project keeps it). Agents
+  in use so far: Devin; Codex may join later.
 - Push to `origin` after each commit once the remote is set up and the human has authorized it.
 - UI must be thumb-friendly and readable from a projector: big buttons, dark theme, high contrast.
   Show the OFFLINE badge prominently — the constraint is the demo.
